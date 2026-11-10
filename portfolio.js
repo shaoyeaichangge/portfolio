@@ -244,6 +244,11 @@
     simulationGrid.append(placeholder);
   }
 
+  const backToTop = document.getElementById("back-to-top");
+  new IntersectionObserver(([hero]) => {
+    backToTop.hidden = hero.isIntersecting || hero.boundingClientRect.top >= 0;
+  }).observe(document.querySelector(".hero"));
+
   let previousFrame = 0;
   function animateTracks(now) {
     const elapsed = Math.min(now - (previousFrame || now), 50);

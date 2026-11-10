@@ -319,6 +319,26 @@ main { margin-block: 24px 32px; }
 .more { display: block; margin: 24px auto 0; padding: 8px 24px; border: 1px solid var(--line); border-radius: 999px; color: var(--accent); background: #fff9; cursor: pointer; }
 .more:hover { background: #fff; }
 .footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.back-to-top {
+  position: fixed;
+  z-index: 2;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  color: var(--accent);
+  background: #f7fbfff2;
+  box-shadow: 0 0 0 1px #58759926, 0 4px 16px #29456b1a;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.back-to-top:hover { background: #e7f0fc; }
 @media (min-width: 1600px) { .works-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 960px) {
   .nav, main { width: calc(100% - 48px); }
@@ -487,6 +507,7 @@ main { margin-block: 24px 32px; }
 </section>
 <footer class="footer"><span>张同学</span><span>个人作品集</span></footer>
 </main>
+<a class="back-to-top" id="back-to-top" href="#top" hidden><span aria-hidden="true">↑</span> 回到顶部</a>
 <script src="./works.js"></script>
 <script src="./portfolio.js"></script>
 <script src="./image-viewer.js"></script>
