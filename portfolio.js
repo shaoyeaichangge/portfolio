@@ -245,6 +245,10 @@
   }
 
   const backToTop = document.getElementById("back-to-top");
+  backToTop.addEventListener("click", event => {
+    if (event.detail === 0) document.querySelector(".brand").focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: reduceMotion.matches ? "instant" : "smooth" });
+  });
   new IntersectionObserver(([hero]) => {
     backToTop.hidden = hero.isIntersecting || hero.boundingClientRect.top >= 0;
   }).observe(document.querySelector(".hero"));

@@ -329,6 +329,7 @@ main { margin-block: 24px 32px; }
   justify-content: center;
   min-width: 44px;
   min-height: 44px;
+  padding: 0;
   border: 1px solid #fff;
   border-radius: 999px;
   color: var(--accent);
@@ -337,7 +338,7 @@ main { margin-block: 24px 32px; }
   font-size: 20px;
   line-height: 1;
   font-weight: 600;
-  text-decoration: none;
+  cursor: pointer;
 }
 .back-to-top:hover { background: #e7f0fc; }
 @media (min-width: 1600px) { .works-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -508,7 +509,7 @@ main { margin-block: 24px 32px; }
 </section>
 <footer class="footer"><span>张同学</span><span>个人作品集</span></footer>
 </main>
-<a class="back-to-top" id="back-to-top" href="#top" aria-label="回到顶部" hidden>↑</a>
+<button class="back-to-top" id="back-to-top" type="button" aria-label="回到顶部" hidden>↑</button>
 <script src="./works.js"></script>
 <script src="./portfolio.js"></script>
 <script src="./image-viewer.js"></script>
