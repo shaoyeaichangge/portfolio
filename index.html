@@ -135,24 +135,19 @@ main { margin-block: 24px 32px; }
 .proof-header, .proof-caption { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .proof-header { font-size: 12px; font-weight: 600; line-height: 16px; }
 .proof-number { color: #b8d9fa; font: 12px/16px ui-monospace, Consolas, monospace; }
-.proof-art { position: relative; display: block; overflow: hidden; border-radius: 4px; background: #fff; }
-.proof-art img { display: block; width: 100%; height: auto; }
-.proof-mark { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.proof-mark path {
-  fill: none;
-  stroke: #386fa7;
-  stroke-width: 1.5px;
-  vector-effect: non-scaling-stroke;
-  transform-origin: 2.6% 12%;
+.proof-art { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.proof-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  padding: 4px;
+  border-radius: 4px;
+  background: #fff;
 }
 .proof-caption { font-size: 14px; line-height: 20px; }
 .proof-note { color: #b5cce7; font-size: 12px; line-height: 16px; }
-@media (prefers-reduced-motion: no-preference) {
-  .hero-proof:is(:hover, :focus-visible) .proof-mark path {
-    animation: proof-trace 500ms cubic-bezier(.22, 1, .36, 1) both;
-  }
-}
-@keyframes proof-trace { from { transform: scaleX(.04); opacity: 0; } }
 .portfolio-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
@@ -282,19 +277,23 @@ main { margin-block: 24px 32px; }
       <p class="social" id="xiaohongshu"><span>小红书</span><span class="account">1581015977</span><span>可在小红书搜索</span></p>
     </div>
   </div>
-  <a class="hero-proof" href="./works/thesis-diagrams/logistics-routes.png" data-image-title="物流搬运路线">
-    <span class="proof-header"><span>代表作</span><span class="proof-number" aria-hidden="true">FIG. 01</span></span>
-    <span class="proof-art">
-      <img src="./works/thesis-diagrams/logistics-routes.png" width="1134" height="595" alt="以三种线型连接车间各区域的物流路线图">
-      <svg class="proof-mark" viewBox="0 0 1134 595" aria-hidden="true" focusable="false">
-        <path d="M37 63V71H1100V63"/>
-      </svg>
-    </span>
-    <span class="proof-caption">
-      <span>物流搬运路线 <span aria-hidden="true">↗</span></span>
-      <span class="proof-note">用线型和粗细区分物流量</span>
-    </span>
-  </a>
+  <div data-image-gallery>
+    <a class="hero-proof" href="./assets/research-workflow-redacted.png"
+      data-image-item data-image-title="科研项目流程" aria-label="查看科研项目可视化，两张脱敏图">
+      <span class="proof-header"><span>代表作 · 脱敏展示</span><span class="proof-number" aria-hidden="true">02 张图</span></span>
+      <span class="proof-art">
+        <img src="./assets/research-workflow-redacted-thumb.webp" width="640" height="574"
+          alt="用双栏组织波形、分析步骤和决策关系的科研流程图">
+        <img src="./assets/technical-architecture-redacted-thumb.webp" width="640" height="487"
+          alt="用三栏梳理时序曲线、节点关系和模块间信息流向的技术架构图">
+      </span>
+      <span class="proof-caption">
+        <span>科研项目可视化</span>
+        <span class="proof-note">查看图集 <span aria-hidden="true">→</span></span>
+      </span>
+    </a>
+    <a href="./assets/technical-architecture-redacted.png" data-image-item data-image-title="多模块技术架构" hidden>多模块技术架构</a>
+  </div>
 </section>
 <div class="portfolio-layout">
 <section class="catalog" id="works" aria-labelledby="works-title">
