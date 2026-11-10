@@ -280,6 +280,16 @@ main { margin-block: 24px 32px; }
   padding: 24px;
 }
 .about-copy { max-width: 52em; color: var(--muted); font-size: 15px; line-height: 26px; text-wrap: pretty; }
+.about-tools-title { margin-top: 16px; color: var(--muted); font-size: 13px; font-weight: 600; }
+.about-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.about-tools li { padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; color: var(--accent); background: #edf4fd; font-size: 13px; line-height: 20px; }
 .simulation-section, .skills-section { margin-top: 32px; }
 .simulation-placeholder { border: 1px dashed #b1c5dc; background: #eaf1fa; }
 .project-gallery { position: relative; isolation: isolate; display: flex; flex-direction: column; }
@@ -427,7 +437,16 @@ main { margin-block: 24px 32px; }
 </section>
 <section class="about-section project" id="about" aria-labelledby="about-title">
   <div class="catalog-heading"><h2 id="about-title">关于我</h2></div>
-  <p class="about-copy">我是张同学，机械工程硕士在读。我做泵类设备的流动和噪声仿真，比较不同结构方案。做项目时，我也会画示意图，说明分析的步骤和各个模块怎么接起来。</p>
+  <div>
+    <p class="about-copy">我是张同学，机械工程硕士在读。我主要做计算流体动力学（CFD）和流固相互作用（FSI）相关的仿真。目前，我在比较不同结构方案对泵类设备流动和噪声的影响。做项目时，我也会画示意图，说明分析步骤和各个模块的关系。</p>
+    <p class="about-tools-title" id="about-tools-title">使用工具</p>
+    <ul class="about-tools" aria-labelledby="about-tools-title">
+      <li>MATLAB</li>
+      <li>ANSYS Fluent</li>
+      <li>ANSYS Mechanical</li>
+      <li>SolidWorks</li>
+    </ul>
+  </div>
 </section>
 <section class="creator-intro" id="xiaohongshu" aria-labelledby="creator-title">
   <h2 id="creator-title">内容创作</h2>
