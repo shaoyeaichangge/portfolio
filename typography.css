@@ -1,0 +1,21 @@
+@font-face {
+  font-family: "Inter Variable";
+  src: url("./assets/fonts/inter-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* v0.825 的网页子集，只包含首页首屏标题和简介用字。 */
+@font-face {
+  font-family: "LXGW ZhenKai";
+  src: url("./assets/fonts/lxgw-zhenkai-hero.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --font-ui: "Inter Variable", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-hero: "LXGW ZhenKai", "Inter Variable", KaiTi, STKaiti, var(--font-ui);
+}

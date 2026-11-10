@@ -1,10 +1,12 @@
+@import url("./typography.css");
+
 :root {
   color-scheme: light;
   --ink: #202936;
   --muted: #536376;
   --accent: #36587b;
   --line: #d6e0eb;
-  font-family: Geist, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-ui);
 }
 * { box-sizing: border-box; }
 body {
