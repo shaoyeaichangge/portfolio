@@ -8,7 +8,7 @@ window.PORTFOLIO_WORKS = [
   {
     title: "科研项目可视化",
     category: "项目绘图与可视化",
-    summary: "用多栏布局、图表与流程箭头，呈现科研项目的技术路线和多模块之间的信息流向。",
+    summary: "这两张图是我在科研项目里画的。一张讲数据怎么一步步分析，另一张讲各个模块怎么接起来。",
     images: [
       {
         title: "科研项目流程",
@@ -23,9 +23,9 @@ window.PORTFOLIO_WORKS = [
     ]
   },
   {
-    title: "复杂问题的图解表达",
+    title: "车间布局和算法示意图",
     category: "项目绘图与可视化",
-    summary: "用几何标注、线型、图形类比和分层流程图，讲清空间关系、物流路径、算法原理与研究思路。",
+    summary: "我画了车间的作业区和搬运路线，还用鸟群的例子解释粒子群算法。这几张图来自我的本科论文。",
     images: [
       { title: "研究技术路线", url: "./works/thesis-diagrams/research-roadmap.png" },
       { title: "作业单元坐标", url: "./works/thesis-diagrams/unit-coordinates.png" },
