@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="张同学的个人主页与作品集，机械工程硕士在读。">
+<title>张同学 · 作品集</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='%2336587b'/%3E%3C/svg%3E">
+<style>
+:root {
+  color-scheme: light;
+  --ink: #202936;
+  --muted: #536376;
+  --accent: #36587b;
+  --line: #d6e0eb;
+  --glass: rgba(255, 255, 255, .65);
+  font-family: Geist, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse at 88% 0%, #dae6f5, transparent 46%),
+    #f4f6f9;
+}
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; }
+button, input, select { font: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+[hidden] { display: none !important; }
+.skip {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  padding: 8px 12px;
+  background: white;
+  transform: translateY(-200%);
+}
+.skip:focus { transform: none; }
+header {
+  border-bottom: 1px solid #fff;
+  background: rgba(250, 252, 255, .57);
+  backdrop-filter: blur(16px);
+}
+.nav, main { width: min(1280px, calc(100% - 64px)); margin-inline: auto; }
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }
+.brand { font-size: 18px; font-weight: 600; text-decoration: none; }
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  color: var(--accent);
+  background: #e5edf8;
+  font-size: 14px;
+}
+.nav-links { display: flex; gap: 4px; padding: 4px; border: 1px solid #fff; border-radius: 999px; background: #dce6f380; }
+.nav-links a { padding: 8px 16px; border-radius: 999px; color: var(--muted); font-size: 14px; text-decoration: none; white-space: nowrap; }
+.nav-links a:hover { color: var(--ink); background: #ffffffd6; }
+main { margin-block: 24px 32px; }
+.hero, .empty-state, .project {
+  border: 1px solid rgba(255, 255, 255, .95);
+  background: var(--glass);
+  box-shadow: 0 0 0 1px #58759912, 0 8px 24px #29456b09;
+}
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 42%);
+  min-height: 284px;
+  overflow: hidden;
+  border-radius: 20px;
+  border-color: #385370;
+  color: #f3f8ff;
+  background: radial-gradient(ellipse at 86% 70%, #244361, transparent 60%), #101e30;
+}
+.hero::before, .hero::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+}
+.hero::before {
+  background-image: linear-gradient(#a9caec19 1px, transparent 1px), linear-gradient(90deg, #a9caec19 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(100deg, transparent 24%, black 72%);
+}
+.hero::after {
+  opacity: .55;
+  background: radial-gradient(360px circle at 70% 40%, #8dbff052, transparent 75%);
+  transition: opacity 300ms cubic-bezier(.22, 1, .36, 1);
+}
+.hero:hover::after { opacity: 1; }
+.hero-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 28px 40px; }
+.hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #a6c8eb;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: .06em;
+}
+.hero-kicker::before { width: 24px; height: 2px; background: #81b5ea; content: ""; }
+.identity { display: flex; align-items: baseline; gap: 4px 20px; flex-wrap: wrap; margin-top: 12px; }
+h1 { font-size: 72px; line-height: 1.05; font-weight: 650; letter-spacing: -.07em; }
+.hero-name { display: flex; }
+.name-mask { display: block; overflow: hidden; padding-block: .04em; }
+.name-glyph { display: block; }
+.subtitle { color: #b9cde4; font-size: 16px; line-height: 24px; }
+.research { margin-top: 12px; max-width: 680px; color: var(--muted); font-size: 14px; line-height: 24px; }
+.hero .research { color: #c6d7e9; }
+.hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 20px; }
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid #c0d9f7;
+  border-radius: 8px;
+  color: #132a44;
+  background: #d9eaff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.hero-cta:hover { background: #f3f8ff; }
+.hero-cta:focus-visible { outline-color: #d9eaff; }
+.social { display: flex; align-items: center; gap: 8px; color: #b9cde4; font-size: 12px; line-height: 20px; flex-wrap: wrap; }
+.account { color: #f0f7ff; font-variant-numeric: tabular-nums; user-select: all; }
+.visual {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 12px 20px 12px 0;
+}
+.draft-board {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 224px;
+  overflow: hidden;
+}
+.draft-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.draft-frame path {
+  fill: none;
+  stroke: #a3c5e9;
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+}
+.draft-axes { opacity: .24; }
+.draft-corners { opacity: .85; }
+.profile-image {
+  display: block;
+  width: 100%;
+  max-height: 252px;
+  height: auto;
+  object-fit: contain;
+}
+.draft-readout {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  color: #bcd5f0;
+  font: 11px/16px ui-monospace, Consolas, monospace;
+  letter-spacing: .06em;
+  opacity: .7;
+  pointer-events: none;
+}
+.draft-reticle {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 240ms cubic-bezier(.22, 1, .36, 1);
+}
+.draft-board[data-tracking] .draft-reticle { opacity: 1; }
+.draft-reticle::before, .draft-reticle::after, .draft-point {
+  position: absolute;
+  content: "";
+}
+.draft-reticle::before {
+  left: 0;
+  top: var(--draft-y, 50%);
+  width: var(--draft-x, 50%);
+  height: 1px;
+  background: linear-gradient(to right, #91baf14d, #c4e3ffbf);
+}
+.draft-reticle::after {
+  top: 0;
+  left: var(--draft-x, 50%);
+  width: 1px;
+  height: var(--draft-y, 50%);
+  background: linear-gradient(#91baf14d, #c4e3ffbf);
+}
+.draft-point {
+  left: var(--draft-x, 50%);
+  top: var(--draft-y, 50%);
+  width: 15px;
+  height: 15px;
+  border: 1px solid #d2e9ff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px #a5d2ff70;
+}
+.hero-guide {
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  background: linear-gradient(to right, #86b8ec, #86b8ec18);
+  transform-origin: left;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .draft-frame path { animation: draft-draw 640ms cubic-bezier(.22, 1, .36, 1) both; }
+  .name-glyph { animation: name-reveal 540ms cubic-bezier(.22, 1, .36, 1) both; animation-delay: 140ms; }
+  .name-mask:nth-child(2) .name-glyph { animation-delay: 200ms; }
+  .name-mask:nth-child(3) .name-glyph { animation-delay: 260ms; }
+  .hero-kicker, .subtitle, .hero-copy .research, .hero-actions {
+    animation: profile-enter 450ms cubic-bezier(.22, 1, .36, 1) both;
+    animation-delay: 240ms;
+  }
+  .hero-actions { animation-delay: 350ms; }
+  @supports (animation-timeline: view()) {
+    .hero { view-timeline-name: --profile-view; }
+    .hero-guide {
+      animation: guide-handoff linear both;
+      animation-timeline: --profile-view;
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+@keyframes draft-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes name-reveal { from { transform: translateY(110%); } to { transform: translateY(0); } }
+@keyframes guide-handoff { to { transform: scaleX(.08); } }
+@keyframes profile-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.portfolio-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
+  align-items: start;
+  gap: 24px;
+  margin-top: 32px;
+}
+.catalog, .github-projects { min-width: 0; }
+.catalog-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.catalog-heading h2 { font-size: 24px; line-height: 32px; font-weight: 600; }
+.result-count { color: var(--muted); font-size: 14px; }
+.toolbar { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+.search-label { flex: 1; }
+.search-label input, .category-label select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background: #ffffffa6;
+}
+.category-label { width: 176px; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.works-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 20px; }
+.works-grid:has(> .project:nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.works-grid:has(> .project-gallery:first-child + .project-gallery:last-child) { grid-auto-rows: 1fr; }
+.project { min-width: 0; overflow: hidden; border-radius: 16px; }
+.project-gallery { position: relative; isolation: isolate; display: flex; flex-direction: column; }
+.project-link { display: block; height: 100%; color: inherit; text-decoration: none; }
+.project-link:hover { background: #ffffff85; }
+.project-link:focus-visible { outline-offset: -3px; }
+.github-card { margin-top: 16px; }
+.github-cover { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; background: #e3eaf4; }
+.github-description { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 24px; }
+.cover { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: #e3eaf4; }
+.cover-contain { object-fit: contain; padding: 12px; }
+.cover-placeholder { display: grid; place-items: center; padding: 24px; color: #6b7e96; font-size: 24px; overflow-wrap: anywhere; }
+.project-body { padding: 20px; }
+.project-category { color: var(--accent); font-size: 12px; line-height: 16px; overflow-wrap: anywhere; }
+.project h3 { margin-top: 8px; font-size: 18px; line-height: 28px; font-weight: 600; overflow-wrap: anywhere; }
+.project-summary { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 24px; overflow-wrap: anywhere; }
+.project-action { margin-top: 12px; color: var(--accent); font-size: 14px; font-weight: 600; }
+.project-link:hover .project-action { text-decoration: underline; text-underline-offset: 3px; }
+.project-gallery .project-body { padding-bottom: 12px; }
+.project-gallery-entry { color: inherit; text-decoration: none; }
+.project-gallery-entry::after { position: absolute; inset: 0; content: ""; }
+.project-gallery-entry:hover { color: var(--accent); }
+.project-gallery-entry:focus-visible::after { border-radius: 16px; outline: 3px solid var(--accent); outline-offset: -3px; }
+.project-carousel { position: relative; z-index: 1; margin: auto 20px 16px; }
+.project-thumbnails {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 80%;
+  gap: 12px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 4px 4px 8px;
+}
+.project-thumbnails:focus-visible { outline: 3px solid var(--accent); outline-offset: -2px; }
+.project-carousel-single .project-thumbnails { grid-auto-columns: 100%; }
+.project-thumbnail { display: block; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: #fff; text-decoration: none; }
+.project-thumbnail:focus-visible { outline-offset: -3px; }
+.project-thumbnail img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: contain; padding: 6px; }
+.project-thumbnail span { display: block; padding: 6px 8px 8px; color: var(--accent); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.project-thumbnail:hover { border-color: var(--accent); }
+.empty-state { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; min-height: 216px; margin-top: 20px; padding: 32px; border-radius: 16px; text-align: center; }
+.empty-state h3 { font-size: 18px; line-height: 28px; font-weight: 500; }
+.empty-state p { color: var(--muted); font-size: 14px; line-height: 24px; }
+.more { display: block; margin: 24px auto 0; padding: 8px 24px; border: 1px solid var(--line); border-radius: 999px; color: var(--accent); background: #fff9; cursor: pointer; }
+.more:hover { background: #fff; }
+.footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+@media (min-width: 1600px) { .works-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 960px) {
+  .nav, main { width: calc(100% - 48px); }
+  .hero { grid-template-columns: minmax(0, 1fr) minmax(240px, 43%); }
+  .portfolio-layout { grid-template-columns: minmax(0, 1fr); }
+  .github-card { max-width: 420px; }
+  .works-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .nav, main { width: calc(100% - 32px); }
+  .nav { min-height: 60px; }
+  .nav-links a { padding: 8px 12px; }
+  main { margin-top: 16px; }
+  .hero { grid-template-columns: 1fr; min-height: 0; }
+  .hero-copy { padding: 24px 24px 12px; }
+  .visual { padding: 0 16px 12px; }
+  .draft-board { min-height: 124px; }
+  .profile-image { max-height: 116px; }
+  .identity { gap: 4px 12px; }
+  h1 { font-size: 48px; line-height: 1.05; }
+  .portfolio-layout { margin-top: 24px; }
+  .works-grid, .works-grid:has(> .project:nth-child(2):last-child) { grid-template-columns: 1fr; gap: 16px; }
+  .toolbar { align-items: stretch; flex-direction: column; }
+  .category-label { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero::after { transition: none; }
+  .hero-copy { animation: profile-fade 240ms both; }
+}
+@keyframes profile-fade { from { opacity: 0; } to { opacity: 1; } }
+</style>
+<link rel="stylesheet" href="./image-viewer.css">
+</head>
+<body id="top">
+<a class="skip" href="#main">跳到主要内容</a>
+<header><nav class="nav" aria-label="页面导航">
+<a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">张</span>张同学</a>
+<div class="nav-links"><a href="#works">作品集</a><a href="#xiaohongshu">小红书</a></div>
+</nav></header>
+<main id="main" tabindex="-1">
+<section class="hero" aria-labelledby="name">
+<div class="hero-copy">
+  <p class="hero-kicker">科研绘图与技术可视化</p>
+  <div class="identity">
+    <h1 id="name" class="hero-name" aria-label="张同学">
+      <span class="name-mask" aria-hidden="true"><span class="name-glyph">张</span></span>
+      <span class="name-mask" aria-hidden="true"><span class="name-glyph">同</span></span>
+      <span class="name-mask" aria-hidden="true"><span class="name-glyph">学</span></span>
+    </h1>
+    <p class="subtitle">机械工程硕士在读</p>
+  </div>
+  <p class="research">负责泵类设备的流动与噪声仿真，对比不同结构方案。</p>
+  <div class="hero-actions">
+    <a class="hero-cta" href="#works">浏览作品 <span aria-hidden="true">↓</span></a>
+    <p class="social" id="xiaohongshu"><span>小红书</span><span class="account">1581015977</span><span>可在小红书搜索</span></p>
+  </div>
+</div>
+<div class="visual">
+  <div class="draft-board">
+    <svg class="draft-frame" viewBox="0 0 480 240" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path class="draft-axes" pathLength="1" d="M16 120H464M240 16V224"/>
+      <path class="draft-corners" pathLength="1" d="M12 36V12H36M444 12H468V36M468 204V228H444M36 228H12V204"/>
+    </svg>
+    <img class="profile-image" src="./assets/profile-visual.svg" alt="叶轮与流线示意图" width="720" height="320" decoding="async">
+    <p class="draft-readout" aria-hidden="true">X — · Y —</p>
+    <div class="draft-reticle" aria-hidden="true"><span class="draft-point"></span></div>
+  </div>
+</div>
+<div class="hero-guide" aria-hidden="true"></div>
+</section>
+<div class="portfolio-layout">
+<section class="catalog" id="works" aria-labelledby="works-title">
+  <div class="catalog-heading">
+    <h2 id="works-title">作品集</h2>
+    <p class="result-count" id="result-count" role="status" aria-live="polite">0 件作品</p>
+  </div>
+  <div class="toolbar" id="toolbar" hidden>
+    <label class="search-label"><span class="sr-only">搜索作品</span><input id="search" type="search" placeholder="搜索作品标题、简介" autocomplete="off"></label>
+    <label class="category-label"><span class="sr-only">作品分类</span><select id="category"><option value="">全部分类</option></select></label>
+  </div>
+  <div class="works-grid" id="works-grid" hidden></div>
+  <div class="empty-state" id="empty-state">
+    <h3 id="empty-title">作品整理中</h3>
+    <p id="empty-description">后续作品将在这里陆续展示。</p>
+  </div>
+  <button class="more" id="load-more" type="button" hidden>加载更多</button>
+  <noscript><p class="research">启用 JavaScript 后可以浏览作品集。</p></noscript>
+</section>
+<aside class="github-projects" aria-labelledby="github-title">
+  <div class="catalog-heading"><h2 id="github-title">GitHub 项目</h2></div>
+  <article class="project github-card">
+    <a class="project-link" href="https://github.com/shaoyeaichangge/phone-speaker-bridge" target="_blank" rel="noopener noreferrer">
+      <img class="github-cover" src="./assets/phone-speaker-bridge-receiver.png" width="540" height="360" alt="项目手机接收页待连接时的界面，包含 Listen、Mic 和 Start 控件" loading="lazy" decoding="async">
+      <div class="project-body">
+        <p class="project-category">开源实践 · 手机接收页截图</p>
+        <h3>Phone Speaker Bridge</h3>
+        <p class="github-description">把 Windows 电脑的声音通过局域网传到手机浏览器。我在开源项目基础上改进了双击启动和采集故障恢复。</p>
+        <p class="project-action">查看 GitHub 仓库 <span aria-hidden="true">↗</span><span class="sr-only">（在新标签页打开）</span></p>
+      </div>
+    </a>
+  </article>
+</aside>
+</div>
+<footer class="footer"><span>张同学</span><span>个人作品集</span></footer>
+</main>
+<script src="./works.js"></script>
+<script src="./portfolio.js"></script>
+<script src="./image-viewer.js"></script>
+<script>
+(() => {
+  const board = document.querySelector(".draft-board");
+  const readout = board.querySelector(".draft-readout");
+  const motion = window.matchMedia("(hover: hover) and (prefers-reduced-motion: no-preference)");
+  board.addEventListener("pointermove", event => {
+    if (event.pointerType !== "mouse" || !motion.matches) return;
+    const box = board.getBoundingClientRect();
+    const x = (event.clientX - box.left) / box.width * 100;
+    const y = (event.clientY - box.top) / box.height * 100;
+    board.style.setProperty("--draft-x", x + "%");
+    board.style.setProperty("--draft-y", y + "%");
+    board.dataset.tracking = "";
+    readout.textContent = "X " + Math.round(x) + "% · Y " + Math.round(y) + "%";
+  });
+  function clearTracking() {
+    delete board.dataset.tracking;
+    readout.textContent = "X — · Y —";
+  }
+  board.addEventListener("pointerleave", clearTracking);
+  motion.addEventListener("change", clearTracking);
+})();
+</script>
+</body>
+</html>
