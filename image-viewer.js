@@ -13,7 +13,9 @@
     </div>
     <div class="image-viewer-stage">
       <div class="image-viewer-content">
-        <img alt="">
+        <button class="image-viewer-image" type="button" aria-label="放大图片" disabled>
+          <img alt="" draggable="false">
+        </button>
         <p role="status" hidden>图片加载失败。</p>
       </div>
       <div class="image-viewer-navigation" role="group" aria-label="切换图片" hidden>
@@ -26,6 +28,7 @@
       </div>
     </div>
     <form class="image-viewer-footer" method="dialog">
+      <p class="image-viewer-hint">点按图片放大</p>
       <button type="submit" autofocus><span aria-hidden="true">←</span> 返回</button>
     </form>
   `;
@@ -33,6 +36,8 @@
 
   const title = viewer.querySelector("h2");
   const image = viewer.querySelector("img");
+  const zoomButton = viewer.querySelector(".image-viewer-image");
+  const hint = viewer.querySelector(".image-viewer-hint");
   const error = viewer.querySelector('[role="status"]');
   const content = viewer.querySelector(".image-viewer-content");
   const position = viewer.querySelector(".image-viewer-position");
@@ -43,6 +48,15 @@
   let slides = [];
   let currentIndex = 0;
   let pressedBackdrop = false;
+  let touchStart;
+  let swipeTime = -Infinity;
+
+  function setZoom(zoomed) {
+    viewer.classList.toggle("image-viewer-zoomed", zoomed);
+    zoomButton.setAttribute("aria-label", zoomed ? "恢复全图" : "放大图片");
+    hint.textContent = zoomed ? "点按图片恢复全图" : "点按图片放大";
+    content.scrollTo(0, 0);
+  }
 
   function showImage() {
     const link = slides[currentIndex];
@@ -51,37 +65,73 @@
       || link.querySelector("h3")?.textContent
       || figure?.querySelector("h2")?.textContent
       || "图片预览";
-    image.alt = figure?.querySelector("img")?.alt || title.textContent;
-    image.hidden = false;
+    image.alt = link.querySelector("img")?.alt || figure?.querySelector("img")?.alt || title.textContent;
+    zoomButton.hidden = false;
     error.hidden = true;
+    setZoom(false);
     navigation.hidden = position.hidden = slides.length < 2;
     position.textContent = (currentIndex + 1) + " / " + slides.length;
     previous.setAttribute("aria-disabled", String(currentIndex === 0));
     next.setAttribute("aria-disabled", String(currentIndex === slides.length - 1));
     previous.tabIndex = currentIndex === 0 ? -1 : 0;
     next.tabIndex = currentIndex === slides.length - 1 ? -1 : 0;
-    content.scrollTop = 0;
+    zoomButton.disabled = true;
+    hint.hidden = true;
+    image.hidden = true;
     image.src = link.href;
+    if (image.complete && image.naturalWidth) showLoadedImage();
+  }
+
+  function showLoadedImage() {
+    image.hidden = false;
+    zoomButton.disabled = false;
+    hint.hidden = false;
   }
 
   function stepBy(amount) {
     const index = currentIndex + amount;
     if (index < 0 || index >= slides.length) return;
+    const focused = document.activeElement;
     currentIndex = index;
     showImage();
+    if (focused === previous && index === 0) next.focus();
+    if (focused === next && index === slides.length - 1) previous.focus();
   }
 
   previous.addEventListener("click", () => stepBy(-1));
   next.addEventListener("click", () => stepBy(1));
+  zoomButton.addEventListener("click", event => {
+    if (event.detail && (event.target !== image || performance.now() - swipeTime < 350)) return;
+    zoomButton.style.setProperty("--zoom-width", image.naturalWidth + "px");
+    setZoom(!viewer.classList.contains("image-viewer-zoomed"));
+  });
+  viewer.addEventListener("pointerdown", event => {
+    if (event.pointerType !== "touch" || !event.isPrimary) return;
+    swipeTime = -Infinity;
+    if (slides.length < 2 || viewer.classList.contains("image-viewer-zoomed")) return;
+    if (!event.target.closest(".image-viewer-stage")) return;
+    touchStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  });
+  viewer.addEventListener("pointerup", event => {
+    if (touchStart?.id !== event.pointerId) return;
+    const dx = event.clientX - touchStart.x;
+    const dy = event.clientY - touchStart.y;
+    touchStart = undefined;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < 1.4 * Math.abs(dy)) return;
+    swipeTime = performance.now();
+    stepBy(dx < 0 ? 1 : -1);
+  });
   viewer.addEventListener("keydown", event => {
     if (slides.length < 2 || !["ArrowLeft", "ArrowRight"].includes(event.key)) return;
     event.preventDefault();
     stepBy(event.key === "ArrowLeft" ? -1 : 1);
   });
 
+  image.addEventListener("load", showLoadedImage);
   image.addEventListener("error", () => {
     if (!viewer.open) return;
-    image.hidden = true;
+    zoomButton.hidden = true;
+    hint.hidden = true;
     error.hidden = false;
   });
 
@@ -95,7 +145,10 @@
   viewer.addEventListener("pointerdown", event => {
     pressedBackdrop = event.button === 0 && isBackdrop(event);
   });
-  viewer.addEventListener("pointercancel", () => { pressedBackdrop = false; });
+  viewer.addEventListener("pointercancel", () => {
+    pressedBackdrop = false;
+    touchStart = undefined;
+  });
   viewer.addEventListener("click", event => {
     if (pressedBackdrop && isBackdrop(event)) viewer.close();
     pressedBackdrop = false;
@@ -123,6 +176,7 @@
 
   viewer.addEventListener("close", () => {
     pressedBackdrop = false;
+    touchStart = undefined;
     image.removeAttribute("src");
     opener?.focus({ preventScroll: true });
     opener = undefined;

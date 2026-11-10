@@ -2,7 +2,7 @@
 // 每项填写 title（标题）、category（分类）、summary（简介）。
 // cover 为封面图片路径，url 为作品页面或文件地址，两者都可留空。
 // coverFit 设为 "contain" 可完整显示封面，linkLabel 可自定义查看提示。
-// 图集可用 images 列出各张图的 title（图名）和 url（图片路径）。
+// 图集可用 images 列出各张图的 title（图名）和 url（大图路径），可另填 thumbnail（缩略图路径）。
 // 图片和文件可放在本站目录中，以相对路径引用。
 window.PORTFOLIO_WORKS = [
   {
@@ -10,8 +10,16 @@ window.PORTFOLIO_WORKS = [
     category: "项目绘图与可视化",
     summary: "用多栏布局、图表与流程箭头，呈现科研项目的技术路线和多模块之间的信息流向。",
     images: [
-      { title: "科研项目流程", url: "./assets/research-workflow-redacted.png" },
-      { title: "多模块技术架构", url: "./assets/technical-architecture-redacted.png" }
+      {
+        title: "科研项目流程",
+        url: "./assets/research-workflow-redacted.png",
+        thumbnail: "./assets/research-workflow-redacted-thumb.webp"
+      },
+      {
+        title: "多模块技术架构",
+        url: "./assets/technical-architecture-redacted.png",
+        thumbnail: "./assets/technical-architecture-redacted-thumb.webp"
+      }
     ]
   },
   {

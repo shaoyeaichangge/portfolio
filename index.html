@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="张同学的个人主页与作品集，机械工程硕士在读。">
+<meta name="description" content="张同学的工程图解与技术作品集，收录科研项目可视化、抽象示意图和开源实践。">
 <title>张同学 · 作品集</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='%2336587b'/%3E%3C/svg%3E">
 <style>
@@ -22,9 +22,7 @@ body {
   min-height: 100vh;
   margin: 0;
   color: var(--ink);
-  background:
-    radial-gradient(ellipse at 88% 0%, #dae6f5, transparent 46%),
-    #f4f6f9;
+  background: #f1f5fa;
 }
 h1, h2, h3, p { margin: 0; }
 a { color: inherit; }
@@ -74,62 +72,41 @@ main { margin-block: 24px 32px; }
   box-shadow: 0 0 0 1px #58759912, 0 8px 24px #29456b09;
 }
 .hero {
-  position: relative;
-  isolation: isolate;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 42%);
-  min-height: 284px;
-  overflow: hidden;
-  border-radius: 20px;
-  border-color: #385370;
-  color: #f3f8ff;
-  background: radial-gradient(ellipse at 86% 70%, #244361, transparent 60%), #101e30;
-}
-.hero::before, .hero::after {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  content: "";
-}
-.hero::before {
-  background-image: linear-gradient(#a9caec19 1px, transparent 1px), linear-gradient(90deg, #a9caec19 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(100deg, transparent 24%, black 72%);
-}
-.hero::after {
-  opacity: .55;
-  background: radial-gradient(360px circle at 70% 40%, #8dbff052, transparent 75%);
-  transition: opacity 300ms cubic-bezier(.22, 1, .36, 1);
-}
-.hero:hover::after { opacity: 1; }
-.hero-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 28px 40px; }
-.hero-kicker {
-  display: flex;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 46%);
   align-items: center;
-  gap: 8px;
-  color: #a6c8eb;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  letter-spacing: .06em;
+  gap: 32px;
+  padding: 32px 40px;
+  border-radius: 20px;
+  border-color: #2a3d55;
+  color: #f3f8ff;
+  background: #142135;
 }
-.hero-kicker::before { width: 24px; height: 2px; background: #81b5ea; content: ""; }
-.identity { display: flex; align-items: baseline; gap: 4px 20px; flex-wrap: wrap; margin-top: 12px; }
-h1 { font-size: 72px; line-height: 1.05; font-weight: 650; letter-spacing: -.07em; }
-.hero-name { display: flex; }
-.name-mask { display: block; overflow: hidden; padding-block: .04em; }
-.name-glyph { display: block; }
-.subtitle { color: #b9cde4; font-size: 16px; line-height: 24px; }
-.research { margin-top: 12px; max-width: 680px; color: var(--muted); font-size: 14px; line-height: 24px; }
-.hero .research { color: #c6d7e9; }
-.hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 20px; }
+.hero-copy { min-width: 0; }
+.hero-identity {
+  color: #b5cce7;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.hero-title {
+  margin-top: 16px;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+.hero-title span { display: block; }
+.hero-title span + span { color: #b8d9fa; }
+.research { margin-top: 16px; max-width: 680px; color: var(--muted); font-size: 14px; line-height: 24px; }
+.hero .research { color: #c6d7e9; text-wrap: balance; }
+.hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 24px; }
 .hero-cta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 36px;
-  padding: 6px 12px;
+  min-height: 44px;
+  padding: 8px 12px;
   border: 1px solid #c0d9f7;
   border-radius: 8px;
   color: #132a44;
@@ -139,128 +116,43 @@ h1 { font-size: 72px; line-height: 1.05; font-weight: 650; letter-spacing: -.07e
   text-decoration: none;
 }
 .hero-cta:hover { background: #f3f8ff; }
-.hero-cta:focus-visible { outline-color: #d9eaff; }
+.hero-cta:focus-visible, .hero-proof:focus-visible { outline-color: #d9eaff; }
 .social { display: flex; align-items: center; gap: 8px; color: #b9cde4; font-size: 12px; line-height: 20px; flex-wrap: wrap; }
 .account { color: #f0f7ff; font-variant-numeric: tabular-nums; user-select: all; }
-.visual {
+.hero-proof {
   display: grid;
-  place-items: center;
+  gap: 8px;
   min-width: 0;
-  padding: 12px 20px 12px 0;
+  padding: 12px;
+  border: 1px solid #829fbc65;
+  border-radius: 16px;
+  color: #e2effc;
+  background: #f0f7ff12;
+  text-decoration: none;
+  transition: background-color 250ms cubic-bezier(.22, 1, .36, 1);
 }
-.draft-board {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  min-width: 0;
-  height: 100%;
-  min-height: 224px;
-  overflow: hidden;
-}
-.draft-frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-.draft-frame path {
+.hero-proof:is(:hover, :focus-visible) { background: #f0f7ff20; }
+.proof-header, .proof-caption { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.proof-header { font-size: 12px; font-weight: 600; line-height: 16px; }
+.proof-number { color: #b8d9fa; font: 12px/16px ui-monospace, Consolas, monospace; }
+.proof-art { position: relative; display: block; overflow: hidden; border-radius: 4px; background: #fff; }
+.proof-art img { display: block; width: 100%; height: auto; }
+.proof-mark { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.proof-mark path {
   fill: none;
-  stroke: #a3c5e9;
-  stroke-width: 1px;
+  stroke: #386fa7;
+  stroke-width: 1.5px;
   vector-effect: non-scaling-stroke;
-  stroke-dasharray: 1;
+  transform-origin: 2.6% 12%;
 }
-.draft-axes { opacity: .24; }
-.draft-corners { opacity: .85; }
-.profile-image {
-  display: block;
-  width: 100%;
-  max-height: 252px;
-  height: auto;
-  object-fit: contain;
-}
-.draft-readout {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  color: #bcd5f0;
-  font: 11px/16px ui-monospace, Consolas, monospace;
-  letter-spacing: .06em;
-  opacity: .7;
-  pointer-events: none;
-}
-.draft-reticle {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 240ms cubic-bezier(.22, 1, .36, 1);
-}
-.draft-board[data-tracking] .draft-reticle { opacity: 1; }
-.draft-reticle::before, .draft-reticle::after, .draft-point {
-  position: absolute;
-  content: "";
-}
-.draft-reticle::before {
-  left: 0;
-  top: var(--draft-y, 50%);
-  width: var(--draft-x, 50%);
-  height: 1px;
-  background: linear-gradient(to right, #91baf14d, #c4e3ffbf);
-}
-.draft-reticle::after {
-  top: 0;
-  left: var(--draft-x, 50%);
-  width: 1px;
-  height: var(--draft-y, 50%);
-  background: linear-gradient(#91baf14d, #c4e3ffbf);
-}
-.draft-point {
-  left: var(--draft-x, 50%);
-  top: var(--draft-y, 50%);
-  width: 15px;
-  height: 15px;
-  border: 1px solid #d2e9ff;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 10px #a5d2ff70;
-}
-.hero-guide {
-  position: absolute;
-  inset: auto 0 0;
-  height: 2px;
-  background: linear-gradient(to right, #86b8ec, #86b8ec18);
-  transform-origin: left;
-  pointer-events: none;
-}
+.proof-caption { font-size: 14px; line-height: 20px; }
+.proof-note { color: #b5cce7; font-size: 12px; line-height: 16px; }
 @media (prefers-reduced-motion: no-preference) {
-  .draft-frame path { animation: draft-draw 640ms cubic-bezier(.22, 1, .36, 1) both; }
-  .name-glyph { animation: name-reveal 540ms cubic-bezier(.22, 1, .36, 1) both; animation-delay: 140ms; }
-  .name-mask:nth-child(2) .name-glyph { animation-delay: 200ms; }
-  .name-mask:nth-child(3) .name-glyph { animation-delay: 260ms; }
-  .hero-kicker, .subtitle, .hero-copy .research, .hero-actions {
-    animation: profile-enter 450ms cubic-bezier(.22, 1, .36, 1) both;
-    animation-delay: 240ms;
-  }
-  .hero-actions { animation-delay: 350ms; }
-  @supports (animation-timeline: view()) {
-    .hero { view-timeline-name: --profile-view; }
-    .hero-guide {
-      animation: guide-handoff linear both;
-      animation-timeline: --profile-view;
-      animation-range: exit 0% exit 100%;
-    }
+  .hero-proof:is(:hover, :focus-visible) .proof-mark path {
+    animation: proof-trace 500ms cubic-bezier(.22, 1, .36, 1) both;
   }
 }
-@keyframes draft-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
-@keyframes name-reveal { from { transform: translateY(110%); } to { transform: translateY(0); } }
-@keyframes guide-handoff { to { transform: scaleX(.08); } }
-@keyframes profile-enter {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes proof-trace { from { transform: scaleX(.04); opacity: 0; } }
 .portfolio-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
@@ -302,8 +194,8 @@ h1 { font-size: 72px; line-height: 1.05; font-weight: 650; letter-spacing: -.07e
 .project-link { display: block; height: 100%; color: inherit; text-decoration: none; }
 .project-link:hover { background: #ffffff85; }
 .project-link:focus-visible { outline-offset: -3px; }
-.github-card { margin-top: 16px; }
-.github-cover { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; background: #e3eaf4; }
+.github-card { margin-top: 20px; }
+.github-cover { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: contain; background: #050608; }
 .github-description { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 24px; }
 .cover { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: #e3eaf4; }
 .cover-contain { object-fit: contain; padding: 12px; }
@@ -346,7 +238,8 @@ h1 { font-size: 72px; line-height: 1.05; font-weight: 650; letter-spacing: -.07e
 @media (min-width: 1600px) { .works-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 960px) {
   .nav, main { width: calc(100% - 48px); }
-  .hero { grid-template-columns: minmax(0, 1fr) minmax(240px, 43%); }
+  .hero { grid-template-columns: minmax(0, 1fr) minmax(240px, 46%); gap: 24px; padding: 24px; }
+  .hero-title { font-size: 36px; line-height: 40px; }
   .portfolio-layout { grid-template-columns: minmax(0, 1fr); }
   .github-card { max-width: 420px; }
   .works-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -356,13 +249,10 @@ h1 { font-size: 72px; line-height: 1.05; font-weight: 650; letter-spacing: -.07e
   .nav { min-height: 60px; }
   .nav-links a { padding: 8px 12px; }
   main { margin-top: 16px; }
-  .hero { grid-template-columns: 1fr; min-height: 0; }
-  .hero-copy { padding: 24px 24px 12px; }
-  .visual { padding: 0 16px 12px; }
-  .draft-board { min-height: 124px; }
-  .profile-image { max-height: 116px; }
-  .identity { gap: 4px 12px; }
-  h1 { font-size: 48px; line-height: 1.05; }
+  .hero { grid-template-columns: 1fr; gap: 24px; padding: 16px; }
+  .hero-title { font-size: 30px; line-height: 36px; }
+  .hero-actions { margin-top: 16px; }
+  .proof-caption { flex-wrap: wrap; }
   .portfolio-layout { margin-top: 24px; }
   .works-grid, .works-grid:has(> .project:nth-child(2):last-child) { grid-template-columns: 1fr; gap: 16px; }
   .toolbar { align-items: stretch; flex-direction: column; }
@@ -370,10 +260,8 @@ h1 { font-size: 72px; line-height: 1.05; font-weight: 650; letter-spacing: -.07e
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .hero::after { transition: none; }
-  .hero-copy { animation: profile-fade 240ms both; }
+  .hero-proof { transition: none; }
 }
-@keyframes profile-fade { from { opacity: 0; } to { opacity: 1; } }
 </style>
 <link rel="stylesheet" href="./image-viewer.css">
 </head>
@@ -384,40 +272,34 @@ h1 { font-size: 72px; line-height: 1.05; font-weight: 650; letter-spacing: -.07e
 <div class="nav-links"><a href="#works">作品集</a><a href="#xiaohongshu">小红书</a></div>
 </nav></header>
 <main id="main" tabindex="-1">
-<section class="hero" aria-labelledby="name">
-<div class="hero-copy">
-  <p class="hero-kicker">科研绘图与技术可视化</p>
-  <div class="identity">
-    <h1 id="name" class="hero-name" aria-label="张同学">
-      <span class="name-mask" aria-hidden="true"><span class="name-glyph">张</span></span>
-      <span class="name-mask" aria-hidden="true"><span class="name-glyph">同</span></span>
-      <span class="name-mask" aria-hidden="true"><span class="name-glyph">学</span></span>
-    </h1>
-    <p class="subtitle">机械工程硕士在读</p>
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <p class="hero-identity">张同学 · 机械工程硕士在读</p>
+    <h1 id="hero-title" class="hero-title"><span>把复杂的工程问题</span> <span>画清楚</span></h1>
+    <p class="research">负责泵类设备的流动与噪声仿真，对比不同结构方案。</p>
+    <div class="hero-actions">
+      <a class="hero-cta" href="#works">浏览代表作 <span aria-hidden="true">↓</span></a>
+      <p class="social" id="xiaohongshu"><span>小红书</span><span class="account">1581015977</span><span>可在小红书搜索</span></p>
+    </div>
   </div>
-  <p class="research">负责泵类设备的流动与噪声仿真，对比不同结构方案。</p>
-  <div class="hero-actions">
-    <a class="hero-cta" href="#works">浏览作品 <span aria-hidden="true">↓</span></a>
-    <p class="social" id="xiaohongshu"><span>小红书</span><span class="account">1581015977</span><span>可在小红书搜索</span></p>
-  </div>
-</div>
-<div class="visual">
-  <div class="draft-board">
-    <svg class="draft-frame" viewBox="0 0 480 240" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <path class="draft-axes" pathLength="1" d="M16 120H464M240 16V224"/>
-      <path class="draft-corners" pathLength="1" d="M12 36V12H36M444 12H468V36M468 204V228H444M36 228H12V204"/>
-    </svg>
-    <img class="profile-image" src="./assets/profile-visual.svg" alt="叶轮与流线示意图" width="720" height="320" decoding="async">
-    <p class="draft-readout" aria-hidden="true">X — · Y —</p>
-    <div class="draft-reticle" aria-hidden="true"><span class="draft-point"></span></div>
-  </div>
-</div>
-<div class="hero-guide" aria-hidden="true"></div>
+  <a class="hero-proof" href="./works/thesis-diagrams/logistics-routes.png" data-image-title="物流搬运路线">
+    <span class="proof-header"><span>代表作</span><span class="proof-number" aria-hidden="true">FIG. 01</span></span>
+    <span class="proof-art">
+      <img src="./works/thesis-diagrams/logistics-routes.png" width="1134" height="595" alt="以三种线型连接车间各区域的物流路线图">
+      <svg class="proof-mark" viewBox="0 0 1134 595" aria-hidden="true" focusable="false">
+        <path d="M37 63V71H1100V63"/>
+      </svg>
+    </span>
+    <span class="proof-caption">
+      <span>物流搬运路线 <span aria-hidden="true">↗</span></span>
+      <span class="proof-note">用线型和粗细区分物流量</span>
+    </span>
+  </a>
 </section>
 <div class="portfolio-layout">
 <section class="catalog" id="works" aria-labelledby="works-title">
   <div class="catalog-heading">
-    <h2 id="works-title">作品集</h2>
+    <h2 id="works-title">精选作品</h2>
     <p class="result-count" id="result-count" role="status" aria-live="polite">0 件作品</p>
   </div>
   <div class="toolbar" id="toolbar" hidden>
@@ -452,28 +334,5 @@ h1 { font-size: 72px; line-height: 1.05; font-weight: 650; letter-spacing: -.07e
 <script src="./works.js"></script>
 <script src="./portfolio.js"></script>
 <script src="./image-viewer.js"></script>
-<script>
-(() => {
-  const board = document.querySelector(".draft-board");
-  const readout = board.querySelector(".draft-readout");
-  const motion = window.matchMedia("(hover: hover) and (prefers-reduced-motion: no-preference)");
-  board.addEventListener("pointermove", event => {
-    if (event.pointerType !== "mouse" || !motion.matches) return;
-    const box = board.getBoundingClientRect();
-    const x = (event.clientX - box.left) / box.width * 100;
-    const y = (event.clientY - box.top) / box.height * 100;
-    board.style.setProperty("--draft-x", x + "%");
-    board.style.setProperty("--draft-y", y + "%");
-    board.dataset.tracking = "";
-    readout.textContent = "X " + Math.round(x) + "% · Y " + Math.round(y) + "%";
-  });
-  function clearTracking() {
-    delete board.dataset.tracking;
-    readout.textContent = "X — · Y —";
-  }
-  board.addEventListener("pointerleave", clearTracking);
-  motion.addEventListener("change", clearTracking);
-})();
-</script>
 </body>
 </html>

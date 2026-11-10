@@ -37,7 +37,7 @@
     card.className = "project";
     const images = (work.images || []).flatMap(image => {
       const url = safeUrl(image?.url);
-      return url ? [{ title: image.title || work.title, url }] : [];
+      return url ? [{ title: image.title || work.title, url, thumbnail: safeUrl(image.thumbnail) }] : [];
     });
     if (images.length) {
       card.classList.add("project-gallery");
@@ -127,7 +127,7 @@
       link.dataset.imageTitle = item.title;
       link.className = "project-thumbnail";
       const image = document.createElement("img");
-      image.src = item.url;
+      image.src = item.thumbnail || item.url;
       image.alt = "";
       image.loading = "lazy";
       image.decoding = "async";
@@ -171,8 +171,7 @@
       if (hovered || now < manualUntil || thumbnails.matches(":has(:focus-visible), :focus-visible")) return;
       const loopWidth = copies[0].offsetLeft - links[0].offsetLeft;
       if (!loopWidth) return;
-      const pixelsPerSecond = reduceMotion.matches ? 32 : 52;
-      offset = (offset + elapsed * pixelsPerSecond / 1000) % loopWidth;
+      offset = (offset + elapsed * 52 / 1000) % loopWidth;
       thumbnails.scrollLeft = offset;
       lastPosition = thumbnails.scrollLeft;
     });
@@ -218,7 +217,8 @@
     option.textContent = name;
     category.append(option);
   }
-  document.getElementById("toolbar").hidden = works.length === 0;
+  document.getElementById("toolbar").hidden = works.length < 6;
+  category.closest("label").hidden = categories.length < 2;
   search.addEventListener("input", updateResults);
   category.addEventListener("change", updateResults);
   moreButton.addEventListener("click", () => {
@@ -233,7 +233,7 @@
   function animateTracks(now) {
     const elapsed = Math.min(now - (previousFrame || now), 50);
     previousFrame = now;
-    if (visibleTracks.size && !document.hidden && !document.querySelector(".image-viewer[open]")) {
+    if (!reduceMotion.matches && visibleTracks.size && !document.hidden && !document.querySelector(".image-viewer[open]")) {
       for (const track of visibleTracks) scrollTrack.get(track)(elapsed, now);
     }
     window.requestAnimationFrame(animateTracks);
