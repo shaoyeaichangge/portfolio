@@ -147,22 +147,75 @@ main { margin-block: 24px 32px; }
 .proof-caption { font-size: 14px; line-height: 20px; }
 .proof-note { color: #b5cce7; font-size: 12px; line-height: 16px; }
 .creator-intro {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
   align-items: center;
-  justify-content: space-between;
-  gap: 16px 24px;
+  gap: 24px;
   margin-top: 24px;
-  padding: 16px 24px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--glass);
+  padding: 24px;
+  border: 1px solid #fff;
+  border-radius: 20px;
+  background: radial-gradient(ellipse at 85% -30%, #c2d9f8, transparent 68%), #e9f0f9;
+  box-shadow: 0 0 0 1px #5875991c, 0 8px 24px #29456b0d;
 }
-.creator-intro h2 { font-size: 20px; line-height: 28px; font-weight: 600; }
-.creator-description { margin-top: 4px; color: var(--muted); font-size: 14px; line-height: 24px; }
-.creator-links { display: grid; gap: 8px; flex: 0 0 auto; max-width: 100%; }
-.creator-account { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; color: var(--muted); font-size: 14px; line-height: 20px; }
+.creator-intro h2 { font-size: 24px; line-height: 32px; font-weight: 600; }
+.creator-description { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 24px; text-wrap: pretty; }
+.creator-links {
+  --channel-gap: 12px;
+  --glass-step: calc(100% + var(--channel-gap));
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--channel-gap);
+  min-width: 0;
+}
+.creator-links::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 auto 0 0;
+  width: calc((100% - var(--channel-gap)) / 2);
+  box-sizing: border-box;
+  border: 1px solid #fff;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffffffef, #e1eeff65 60%, #ffffffa6);
+  box-shadow: inset 0 -1px 0 #9fbbdd80, 0 8px 16px #416d9d20;
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+  content: "";
+  transform: translateX(var(--glass-offset, 0px));
+  transition: transform 450ms cubic-bezier(.22, 1, .36, 1);
+}
+.creator-links:has(.creator-channel:last-child:focus-within) { --glass-offset: var(--glass-step); }
+@media (hover: hover) {
+  .creator-links:has(.creator-channel:first-child:hover) { --glass-offset: 0px; }
+  .creator-links:has(.creator-channel:last-child:hover) { --glass-offset: var(--glass-step); }
+}
+.creator-channel {
+  display: grid;
+  align-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #ffffffab;
+  border-radius: 16px;
+  background: #ffffff26;
+}
+.creator-channel-heading { display: flex; align-items: center; gap: 8px; }
+.creator-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  height: 40px;
+  border: 1px solid #ffffffd9;
+  border-radius: 8px;
+  color: var(--accent);
+  background: #f7fbffbd;
+}
+.creator-icon svg { width: 20px; height: 20px; }
+.creator-channel h3 { font-size: 14px; line-height: 20px; font-weight: 600; }
 .creator-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.account { color: var(--accent); font-variant-numeric: tabular-nums; user-select: all; }
+.account { color: var(--muted); font-size: 12px; line-height: 16px; font-variant-numeric: tabular-nums; user-select: all; }
 .creator-link {
   display: inline-flex;
   align-items: center;
@@ -172,7 +225,7 @@ main { margin-block: 24px 32px; }
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--accent);
-  background: #e8f0fa;
+  background: #f9fcffd1;
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;
@@ -266,6 +319,7 @@ main { margin-block: 24px 32px; }
   .nav, main { width: calc(100% - 48px); }
   .hero { grid-template-columns: minmax(0, 1fr) minmax(240px, 46%); gap: 24px; padding: 24px; }
   .hero-title { font-size: 36px; line-height: 40px; }
+  .creator-intro { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .portfolio-layout { grid-template-columns: minmax(0, 1fr); }
   .github-card { max-width: 420px; }
   .works-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -279,7 +333,15 @@ main { margin-block: 24px 32px; }
   .hero-title { font-size: 30px; line-height: 36px; }
   .hero-cta { margin-top: 16px; }
   .proof-caption { flex-wrap: wrap; }
-  .creator-intro { align-items: flex-start; flex-direction: column; gap: 8px; padding: 16px; }
+  .creator-intro { padding: 16px; }
+  .creator-intro h2 { font-size: 20px; line-height: 28px; }
+  .creator-links { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; }
+  .creator-links::before {
+    inset: 0 0 auto;
+    width: auto;
+    height: calc((100% - var(--channel-gap)) / 2);
+    transform: translateY(var(--glass-offset, 0px));
+  }
   .portfolio-layout { margin-top: 24px; }
   .works-grid, .works-grid:has(> .project:nth-child(2):last-child) { grid-template-columns: 1fr; gap: 16px; }
   .toolbar { align-items: stretch; flex-direction: column; }
@@ -288,6 +350,7 @@ main { margin-block: 24px 32px; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .hero-proof { transition: none; }
+  .creator-links::before { transition: none; }
 }
 </style>
 <link rel="stylesheet" href="./image-viewer.css">
@@ -330,19 +393,41 @@ main { margin-block: 24px 32px; }
     <p class="creator-description">在小红书讲解市调竞赛的模型选择和 AI 辅助数据分析，并把参赛流程整理成可复用的 AI Skill。</p>
   </div>
   <div class="creator-links">
-    <p class="creator-account">
-      <span>小红书号 <span class="account">1581015977</span></span>
-      <a class="creator-link" href="https://www.xiaohongshu.com/user/profile/62f22882000000001f007ea3?xsec_token=YBYdho9Po7YWUmR-dX9t-bN4Vjs1jRU9EIs3pKu57_9Xo%3D&amp;xsec_source=app_share"
-        target="_blank" rel="noopener noreferrer" aria-label="直达小红书主页，在新标签页打开">直达主页 <span aria-hidden="true">↗</span></a>
-    </p>
-    <p class="creator-account">
-      <span>微信公众号 <span class="account">弦外 Max</span></span>
-      <span class="creator-actions">
+    <div class="creator-channel">
+      <div class="creator-channel-heading">
+        <span class="creator-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 4h10a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm-2 14a2 2 0 0 1 2-2h12M8 8h6m-6 4h4"/>
+          </svg>
+        </span>
+        <div>
+          <h3>小红书</h3>
+          <p class="account">1581015977</p>
+        </div>
+      </div>
+      <div class="creator-actions">
+        <a class="creator-link" href="https://www.xiaohongshu.com/user/profile/62f22882000000001f007ea3?xsec_token=YBYdho9Po7YWUmR-dX9t-bN4Vjs1jRU9EIs3pKu57_9Xo%3D&amp;xsec_source=app_share"
+          target="_blank" rel="noopener noreferrer" aria-label="直达小红书主页，在新标签页打开">直达主页 <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+    <div class="creator-channel">
+      <div class="creator-channel-heading">
+        <span class="creator-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 5h16v11H9l-5 3V5Zm4 4h8m-8 3h5"/>
+          </svg>
+        </span>
+        <div>
+          <h3>微信公众号</h3>
+          <p class="account">弦外 Max</p>
+        </div>
+      </div>
+      <div class="creator-actions">
         <a class="creator-link" href="https://mp.weixin.qq.com/s/jSh0OlqUSO5-xXvn3dEE6w"
           target="_blank" rel="noopener noreferrer" aria-label="阅读弦外 Max 的公众号文章，在新标签页打开">阅读文章 <span aria-hidden="true">↗</span></a>
         <a class="creator-link" href="./assets/wechat-xianwai-max-qr.png" data-image-title="用微信扫码关注「弦外 Max」">查看二维码</a>
-      </span>
-    </p>
+      </div>
+    </div>
   </div>
 </section>
 <div class="portfolio-layout">
