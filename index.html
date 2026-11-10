@@ -159,8 +159,25 @@ main { margin-block: 24px 32px; }
 }
 .creator-intro h2 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .creator-description { margin-top: 4px; color: var(--muted); font-size: 14px; line-height: 24px; }
-.creator-account { color: var(--muted); font-size: 14px; line-height: 20px; white-space: nowrap; }
+.creator-links { display: grid; gap: 8px; flex: 0 0 auto; max-width: 100%; }
+.creator-account { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; color: var(--muted); font-size: 14px; line-height: 20px; }
 .account { color: var(--accent); font-variant-numeric: tabular-nums; user-select: all; }
+.creator-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--accent);
+  background: #e8f0fa;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  text-decoration: none;
+}
+.creator-link:hover { background: #dce9f9; }
 .portfolio-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
@@ -311,7 +328,13 @@ main { margin-block: 24px 32px; }
     <h2 id="creator-title">内容创作与方法讲解</h2>
     <p class="creator-description">在小红书讲解市调竞赛的模型选择和 AI 辅助数据分析，并把参赛流程整理成可复用的 AI Skill。</p>
   </div>
-  <p class="creator-account">小红书号 <span class="account">1581015977</span></p>
+  <div class="creator-links">
+    <p class="creator-account">
+      <span>小红书号 <span class="account">1581015977</span></span>
+      <a class="creator-link" href="https://www.xiaohongshu.com/user/profile/62f22882000000001f007ea3?xsec_token=YBYdho9Po7YWUmR-dX9t-bN4Vjs1jRU9EIs3pKu57_9Xo%3D&amp;xsec_source=app_share"
+        target="_blank" rel="noopener noreferrer" aria-label="直达小红书主页，在新标签页打开">直达主页 <span aria-hidden="true">↗</span></a>
+    </p>
+  </div>
 </section>
 <div class="portfolio-layout">
 <section class="catalog" id="works" aria-labelledby="works-title">
