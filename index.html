@@ -100,12 +100,12 @@ main { margin-block: 24px 32px; }
 .hero-title span + span { color: #b8d9fa; }
 .research { margin-top: 16px; max-width: 680px; color: var(--muted); font-size: 14px; line-height: 24px; }
 .hero .research { color: #c6d7e9; text-wrap: balance; }
-.hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 24px; }
 .hero-cta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-height: 44px;
+  margin-top: 24px;
   padding: 8px 12px;
   border: 1px solid #c0d9f7;
   border-radius: 8px;
@@ -117,8 +117,6 @@ main { margin-block: 24px 32px; }
 }
 .hero-cta:hover { background: #f3f8ff; }
 .hero-cta:focus-visible, .hero-proof:focus-visible { outline-color: #d9eaff; }
-.social { display: grid; color: #b9cde4; font-size: 12px; line-height: 20px; }
-.account { color: #f0f7ff; font-variant-numeric: tabular-nums; user-select: all; }
 .hero-proof {
   display: grid;
   gap: 8px;
@@ -148,6 +146,21 @@ main { margin-block: 24px 32px; }
 }
 .proof-caption { font-size: 14px; line-height: 20px; }
 .proof-note { color: #b5cce7; font-size: 12px; line-height: 16px; }
+.creator-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-top: 24px;
+  padding: 16px 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--glass);
+}
+.creator-intro h2 { font-size: 20px; line-height: 28px; font-weight: 600; }
+.creator-description { margin-top: 4px; color: var(--muted); font-size: 14px; line-height: 24px; }
+.creator-account { color: var(--muted); font-size: 14px; line-height: 20px; white-space: nowrap; }
+.account { color: var(--accent); font-variant-numeric: tabular-nums; user-select: all; }
 .portfolio-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
@@ -246,8 +259,9 @@ main { margin-block: 24px 32px; }
   main { margin-top: 16px; }
   .hero { grid-template-columns: 1fr; gap: 24px; padding: 16px; }
   .hero-title { font-size: 30px; line-height: 36px; }
-  .hero-actions { margin-top: 16px; }
+  .hero-cta { margin-top: 16px; }
   .proof-caption { flex-wrap: wrap; }
+  .creator-intro { align-items: flex-start; flex-direction: column; gap: 8px; padding: 16px; }
   .portfolio-layout { margin-top: 24px; }
   .works-grid, .works-grid:has(> .project:nth-child(2):last-child) { grid-template-columns: 1fr; gap: 16px; }
   .toolbar { align-items: stretch; flex-direction: column; }
@@ -264,7 +278,7 @@ main { margin-block: 24px 32px; }
 <a class="skip" href="#main">跳到主要内容</a>
 <header><nav class="nav" aria-label="页面导航">
 <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">张</span>张同学</a>
-<div class="nav-links"><a href="#works">作品集</a><a href="#xiaohongshu">小红书</a></div>
+<div class="nav-links"><a href="#works">作品集</a><a href="#xiaohongshu">内容创作</a></div>
 </nav></header>
 <main id="main" tabindex="-1">
 <section class="hero" aria-labelledby="hero-title">
@@ -272,13 +286,7 @@ main { margin-block: 24px 32px; }
     <p class="hero-identity">张同学 · 机械工程硕士在读</p>
     <h1 id="hero-title" class="hero-title"><span>把复杂的工程问题</span> <span>画清楚</span></h1>
     <p class="research">负责泵类设备的流动与噪声仿真，对比不同结构方案。</p>
-    <div class="hero-actions">
-      <a class="hero-cta" href="#works">浏览代表作 <span aria-hidden="true">↓</span></a>
-      <p class="social" id="xiaohongshu">
-        <span>小红书号 <span class="account">1581015977</span></span>
-        <span>分享市调大赛、AI 辅助数据分析与升学经验。</span>
-      </p>
-    </div>
+    <a class="hero-cta" href="#works">浏览代表作 <span aria-hidden="true">↓</span></a>
   </div>
   <div data-image-gallery>
     <a class="hero-proof" href="./assets/research-workflow-redacted.png"
@@ -297,6 +305,13 @@ main { margin-block: 24px 32px; }
     </a>
     <a href="./assets/technical-architecture-redacted.png" data-image-item data-image-title="多模块技术架构" hidden>多模块技术架构</a>
   </div>
+</section>
+<section class="creator-intro" id="xiaohongshu" aria-labelledby="creator-title">
+  <div>
+    <h2 id="creator-title">内容创作与方法讲解</h2>
+    <p class="creator-description">在小红书讲解市调竞赛的模型选择和 AI 辅助数据分析，并把参赛流程整理成可复用的 AI Skill。</p>
+  </div>
+  <p class="creator-account">小红书号 <span class="account">1581015977</span></p>
 </section>
 <div class="portfolio-layout">
 <section class="catalog" id="works" aria-labelledby="works-title">
