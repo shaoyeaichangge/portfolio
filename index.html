@@ -161,6 +161,7 @@ main { margin-block: 24px 32px; }
 .creator-description { margin-top: 4px; color: var(--muted); font-size: 14px; line-height: 24px; }
 .creator-links { display: grid; gap: 8px; flex: 0 0 auto; max-width: 100%; }
 .creator-account { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; color: var(--muted); font-size: 14px; line-height: 20px; }
+.creator-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .account { color: var(--accent); font-variant-numeric: tabular-nums; user-select: all; }
 .creator-link {
   display: inline-flex;
@@ -336,7 +337,11 @@ main { margin-block: 24px 32px; }
     </p>
     <p class="creator-account">
       <span>微信公众号 <span class="account">弦外 Max</span></span>
-      <a class="creator-link" href="./assets/wechat-xianwai-max-qr.png" data-image-title="用微信扫码关注「弦外 Max」">查看二维码</a>
+      <span class="creator-actions">
+        <a class="creator-link" href="https://mp.weixin.qq.com/s/jSh0OlqUSO5-xXvn3dEE6w"
+          target="_blank" rel="noopener noreferrer" aria-label="阅读弦外 Max 的公众号文章，在新标签页打开">阅读文章 <span aria-hidden="true">↗</span></a>
+        <a class="creator-link" href="./assets/wechat-xianwai-max-qr.png" data-image-title="用微信扫码关注「弦外 Max」">查看二维码</a>
+      </span>
     </p>
   </div>
 </section>
