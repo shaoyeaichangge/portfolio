@@ -148,7 +148,7 @@ main { margin-block: 24px 32px; }
 .proof-note { color: #b5cce7; font-size: 12px; line-height: 16px; }
 .creator-intro {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+  grid-template-columns: minmax(128px, .35fr) minmax(0, 1.65fr);
   align-items: center;
   gap: 24px;
   margin-top: 24px;
@@ -159,7 +159,7 @@ main { margin-block: 24px 32px; }
   box-shadow: 0 0 0 1px #5875991c, 0 8px 24px #29456b0d;
 }
 .creator-intro h2 { font-size: 24px; line-height: 32px; font-weight: 600; }
-.creator-description { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 24px; text-wrap: pretty; }
+.creator-description { color: var(--muted); font-size: 14px; line-height: 24px; text-wrap: pretty; }
 .creator-links {
   --channel-gap: 12px;
   --glass-step: calc(100% + var(--channel-gap));
@@ -193,7 +193,7 @@ main { margin-block: 24px 32px; }
 }
 .creator-channel {
   display: grid;
-  align-content: space-between;
+  grid-template-rows: auto 1fr auto;
   gap: 12px;
   min-width: 0;
   padding: 16px;
@@ -388,10 +388,7 @@ main { margin-block: 24px 32px; }
   </div>
 </section>
 <section class="creator-intro" id="xiaohongshu" aria-labelledby="creator-title">
-  <div>
-    <h2 id="creator-title">我写的竞赛笔记</h2>
-    <p class="creator-description">我在小红书写市调比赛，聊拿到数据后怎么选模型、怎么用 AI 帮忙分析。我还把参赛流程做成了一个 Skill。</p>
-  </div>
+  <h2 id="creator-title">内容创作</h2>
   <div class="creator-links">
     <div class="creator-channel">
       <div class="creator-channel-heading">
@@ -405,6 +402,7 @@ main { margin-block: 24px 32px; }
           <p class="account">1581015977</p>
         </div>
       </div>
+      <p class="creator-description">保研怎么准备、大学竞赛怎么入门，我会在这里分享经验和建议。</p>
       <div class="creator-actions">
         <a class="creator-link" href="https://www.xiaohongshu.com/user/profile/62f22882000000001f007ea3?xsec_token=YBYdho9Po7YWUmR-dX9t-bN4Vjs1jRU9EIs3pKu57_9Xo%3D&amp;xsec_source=app_share"
           target="_blank" rel="noopener noreferrer" aria-label="直达小红书主页，在新标签页打开">直达主页 <span aria-hidden="true">↗</span></a>
@@ -422,6 +420,7 @@ main { margin-block: 24px 32px; }
           <p class="account">弦外 Max</p>
         </div>
       </div>
+      <p class="creator-description">分享好用的电脑软件和操作技巧，让日常工作省点时间。</p>
       <div class="creator-actions">
         <a class="creator-link" href="https://mp.weixin.qq.com/s/jSh0OlqUSO5-xXvn3dEE6w"
           target="_blank" rel="noopener noreferrer" aria-label="阅读弦外 Max 的公众号文章，在新标签页打开">阅读文章 <span aria-hidden="true">↗</span></a>
