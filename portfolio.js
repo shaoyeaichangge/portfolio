@@ -4,6 +4,7 @@
   );
   const pageSize = 12;
   const grid = document.getElementById("works-grid");
+  const simulationGrid = document.getElementById("simulation-grid");
   const search = document.getElementById("search");
   const category = document.getElementById("category");
   const moreButton = document.getElementById("load-more");
@@ -14,7 +15,7 @@
   const visibleTracks = new Set();
   const trackObserver = new IntersectionObserver(entries => {
     for (const { target, isIntersecting } of entries) {
-      if (isIntersecting && grid.contains(target)) visibleTracks.add(target);
+      if (isIntersecting && target.isConnected) visibleTracks.add(target);
       else visibleTracks.delete(target);
     }
   });
@@ -194,8 +195,10 @@
       return (!category.value || (work.category || "未分类") === category.value)
         && text.includes(query);
     });
-    for (const track of grid.querySelectorAll(".project-thumbnails")) trackObserver.unobserve(track);
-    visibleTracks.clear();
+    for (const track of grid.querySelectorAll(".project-thumbnails")) {
+      trackObserver.unobserve(track);
+      visibleTracks.delete(track);
+    }
     grid.replaceChildren();
     visibleCount = 0;
     resultCount.textContent = matchingWorks.length === works.length
@@ -228,6 +231,18 @@
     firstNewCard?.querySelector("a, h3").focus();
   });
   updateResults();
+
+  for (const simulation of window.PORTFOLIO_SIMULATIONS || []) {
+    if (simulation.images?.length) {
+      simulationGrid.append(createCard({ ...simulation, category: "仿真作品" }));
+      continue;
+    }
+
+    const placeholder = document.createElement("article");
+    placeholder.className = "project simulation-placeholder";
+    placeholder.append(createCardBody({ title: simulation.title, category: "结果待更新" }));
+    simulationGrid.append(placeholder);
+  }
 
   let previousFrame = 0;
   function animateTracks(now) {

@@ -34,3 +34,11 @@ window.PORTFOLIO_WORKS = [
     ]
   }
 ];
+
+// 仿真结果按类别放在这里。补充 images 后，预留卡片会显示对应图集。
+// 每张图填写 title 和 url，需要时再加 thumbnail。
+window.PORTFOLIO_SIMULATIONS = [
+  { title: "流体仿真", images: [] },
+  { title: "结构仿真", images: [] },
+  { title: "顺序仿真", images: [] }
+];
