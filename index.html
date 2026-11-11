@@ -66,8 +66,6 @@ header {
 .nav-links { display: flex; gap: 4px; padding: 4px; border: 1px solid #fff; border-radius: 999px; background: #dce6f380; }
 .nav-links a { padding: 8px 16px; border-radius: 999px; color: var(--muted); font-size: 14px; text-decoration: none; white-space: nowrap; }
 .nav-links a:hover { color: var(--ink); background: #ffffffd6; }
-.skills-page-link { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; margin-top: 12px; color: var(--accent); font-size: 14px; font-weight: 500; text-decoration: none; }
-.skills-page-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 main { margin-block: 24px 32px; }
 .hero, .empty-state, .project {
   border: 1px solid rgba(255, 255, 255, .95);
@@ -283,16 +281,6 @@ main { margin-block: 24px 32px; }
   padding: 24px;
 }
 .about-copy { max-width: 52em; color: var(--muted); font-size: 15px; line-height: 26px; text-wrap: pretty; }
-.about-tools-title { margin-top: 16px; color: var(--muted); font-size: 13px; font-weight: 600; }
-.about-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 8px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.about-tools li { padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; color: var(--accent); background: #edf4fd; font-size: 13px; line-height: 20px; }
 .simulation-section { margin-top: 32px; }
 .simulation-placeholder { border: 1px dashed #b1c5dc; background: #eaf1fa; }
 .project-gallery { position: relative; isolation: isolate; display: flex; flex-direction: column; }
@@ -409,13 +397,14 @@ main { margin-block: 24px 32px; }
 }
 </style>
 <link rel="stylesheet" href="./image-viewer.css">
+<link rel="stylesheet" href="./skills.css">
 <link rel="stylesheet" href="./bottom-nav.css">
 </head>
 <body id="top">
 <a class="skip" href="#main">跳到主要内容</a>
 <header><nav class="nav" aria-label="页面导航">
 <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">张</span>张同学</a>
-<div class="nav-links"><a href="#works">作品集</a><a href="#simulation">仿真</a><a href="./skills.html">技能</a><a href="#xiaohongshu">内容创作</a></div>
+<div class="nav-links"><a href="#works">作品集</a><a href="#simulation">仿真</a><a href="#skills">技能</a><a href="#xiaohongshu">内容创作</a></div>
 </nav></header>
 <main id="main" tabindex="-1">
 <section class="hero" aria-labelledby="hero-title">
@@ -480,18 +469,55 @@ main { margin-block: 24px 32px; }
   <div class="catalog-heading"><h2 id="simulation-title">仿真作品</h2></div>
   <div class="works-grid" id="simulation-grid"></div>
 </section>
+<section class="skills-section" id="skills" aria-labelledby="skills-title">
+  <div class="catalog-heading"><h2 id="skills-title">技能</h2></div>
+  <div class="skill-sheet">
+    <section class="skill-row" id="analysis" aria-labelledby="analysis-title">
+      <div class="skill-label"><span class="skill-number" aria-hidden="true">01</span><h3 id="analysis-title">仿真分析</h3><p>目前的研究方向</p></div>
+      <div class="skill-detail">
+        <p class="skill-description">我专注于计算流体动力学和流固相互作用。目前在比较不同结构方案对泵类设备流动和噪声的影响。</p>
+        <ul class="skill-list"><li>计算流体动力学（CFD）</li><li>流固相互作用（FSI）</li><li>泵类设备流动与噪声仿真</li><li>不同结构方案的对比分析</li></ul>
+        <a class="evidence-link" href="#simulation">仿真作品空间 <span aria-hidden="true">↗</span></a>
+        <span class="availability">结果待更新</span>
+      </div>
+    </section>
+
+    <section class="skill-row" id="visualization" aria-labelledby="visualization-title">
+      <div class="skill-label"><span class="skill-number" aria-hidden="true">02</span><h3 id="visualization-title">技术绘图</h3><p>项目与抽象概念的表达</p></div>
+      <div class="skill-detail">
+        <p class="skill-description">我擅长把项目中的分析步骤、模块关系和抽象概念画成示意图。从科研项目的技术路线，到车间的搬运路线、算法的运行思路，都可以用图讲清楚。</p>
+        <ul class="skill-list"><li>科研项目流程与技术路线</li><li>多模块技术架构</li><li>车间布局与物流关系</li><li>算法原理与抽象示意图</li></ul>
+        <a class="evidence-link" href="#works">查看绘图作品 <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section class="skill-row" id="writing" aria-labelledby="writing-title">
+      <div class="skill-label"><span class="skill-number" aria-hidden="true">03</span><h3 id="writing-title">内容创作</h3><p>把经验和好用的方法分享出来</p></div>
+      <div class="skill-detail">
+        <div class="channel-summary"><h4>小红书</h4><p>围绕保研准备、大学竞赛分享经验和建议。</p></div>
+        <div class="channel-summary"><h4>公众号「弦外 Max」</h4><p>分享提高工作效率的电脑软件、操作技巧和使用心得。</p></div>
+        <a class="evidence-link" href="#xiaohongshu">查看我的账号与内容 <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section class="skill-row" id="support" aria-labelledby="support-title">
+      <div class="skill-label"><span class="skill-number" aria-hidden="true">04</span><h3 id="support-title">日常技能</h3><p>电脑与办公设备</p></div>
+      <div class="skill-detail">
+        <div class="channel-summary"><h4>打印机维修</h4><p>办公室的打印机出故障时，我能排查并处理常见问题。</p></div>
+        <div class="channel-summary"><h4>电脑硬件配置</h4><p>我比较熟悉电脑硬件，看得懂处理器、内存和硬盘等常见参数。</p></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="tools-panel" aria-labelledby="tools-title">
+    <h3 id="tools-title">使用工具</h3>
+    <ul class="tool-list"><li>MATLAB</li><li>ANSYS Fluent</li><li>ANSYS Mechanical</li><li>SolidWorks</li></ul>
+  </div>
+</section>
 <section class="about-section project" id="about" aria-labelledby="about-title">
   <div class="catalog-heading"><h2 id="about-title">关于我</h2></div>
   <div>
     <p class="about-copy">我是张同学，机械工程硕士在读。我主要做计算流体动力学（CFD）和流固相互作用（FSI）相关的仿真。目前，我在比较不同结构方案对泵类设备流动和噪声的影响。你可以滑动鼠标，了解我的工作与能力。</p>
-    <p class="about-tools-title" id="about-tools-title">使用工具</p>
-    <ul class="about-tools" aria-labelledby="about-tools-title">
-      <li>MATLAB</li>
-      <li>ANSYS Fluent</li>
-      <li>ANSYS Mechanical</li>
-      <li>SolidWorks</li>
-    </ul>
-    <a class="skills-page-link" href="./skills.html">了解我的技能 <span aria-hidden="true">↗</span></a>
   </div>
 </section>
 <section class="creator-intro" id="xiaohongshu" aria-labelledby="creator-title">
@@ -545,7 +571,7 @@ main { margin-block: 24px 32px; }
 <nav class="bottom-nav" aria-label="底部导航">
   <a href="#works" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>作品集</span></a>
   <a href="#simulation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7c3-5 6 5 9 0s6 5 9 0M3 12c3-5 6 5 9 0s6 5 9 0M3 17c3-5 6 5 9 0s6 5 9 0"/></svg><span>仿真</span></a>
-  <a href="./skills.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg><span>技能</span></a>
+  <a href="#skills"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg><span>技能</span></a>
   <a href="#xiaohongshu"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>内容创作</span></a>
   <a href="#about"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span>关于我</span></a>
 </nav>
