@@ -1,6 +1,77 @@
 (() => {
   const nav = document.querySelector(".bottom-nav");
   if (!nav) return;
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const reduceTransparency = matchMedia("(prefers-reduced-transparency: reduce), (prefers-contrast: more)");
+
+  // A capsule-shaped displacement map bends the real backdrop only near its rim.
+  // Build it on resize rather than reading or copying the page into a canvas.
+  if (typeof ResizeObserver !== "undefined" && CSS.supports("backdrop-filter", 'url("#nav-glass-lens")')) {
+    const ns = "http://www.w3.org/2000/svg";
+    const defs = document.createElementNS(ns, "svg");
+    defs.classList.add("nav-glass-defs");
+    defs.setAttribute("aria-hidden", "true");
+    defs.innerHTML = '<defs><filter id="nav-glass-lens" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="soft"/><feImage result="lens" preserveAspectRatio="none"/><feDisplacementMap in="soft" in2="lens" scale="30" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';
+    document.body.append(defs);
+    const lensImage = defs.querySelector("feImage");
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    let previousSize = "";
+
+    function updateLens() {
+      if (!context || reduceTransparency.matches) return;
+      const width = Math.round(nav.clientWidth);
+      const height = Math.round(nav.clientHeight);
+      const size = `${width}:${height}`;
+      if (!width || !height || size === previousSize) return;
+      previousSize = size;
+      canvas.width = width;
+      canvas.height = height;
+      const map = context.createImageData(width, height);
+      const radius = height / 2;
+      const band = 16;
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const dx = x + .5 - width / 2;
+          const dy = y + .5 - height / 2;
+          const nx = Math.max(Math.abs(dx) - (width / 2 - radius), 0);
+          const ny = Math.abs(dy);
+          const length = Math.hypot(nx, ny);
+          const depth = radius - length;
+          const bend = depth >= 0 ? Math.pow(Math.max(0, 1 - depth / band), 1.4) : 0;
+          const index = (y * width + x) * 4;
+          map.data[index] = 128 - (length ? nx / length * Math.sign(dx) : 0) * bend * 120;
+          map.data[index + 1] = 128 - (length ? ny / length * Math.sign(dy) : 0) * bend * 120;
+          map.data[index + 2] = 128;
+          map.data[index + 3] = 255;
+        }
+      }
+      context.putImageData(map, 0, 0);
+      lensImage.setAttribute("href", canvas.toDataURL());
+      nav.style.setProperty("--glass-optics", 'url("#nav-glass-lens") saturate(1.5)');
+    }
+    new ResizeObserver(updateLens).observe(nav);
+    reduceTransparency.addEventListener("change", () => {
+      previousSize = "";
+      updateLens();
+    });
+  }
+
+  let lightFrame = 0;
+  nav.addEventListener("pointermove", event => {
+    if (event.pointerType !== "mouse" || reduceMotion.matches || reduceTransparency.matches) return;
+    cancelAnimationFrame(lightFrame);
+    lightFrame = requestAnimationFrame(() => {
+      const rect = nav.getBoundingClientRect();
+      nav.style.setProperty("--shine-x", `${event.clientX - rect.left}px`);
+      nav.style.setProperty("--shine-y", `${event.clientY - rect.top}px`);
+    });
+  });
+  nav.addEventListener("pointerleave", () => {
+    cancelAnimationFrame(lightFrame);
+    nav.style.removeProperty("--shine-x");
+    nav.style.removeProperty("--shine-y");
+  });
   const links = [...nav.querySelectorAll("a")];
   let activeLink;
 
