@@ -136,7 +136,9 @@
 
   function activate(link, current = "location") {
     if (!link || link === activeLink) return;
-    activeLink?.removeAttribute("aria-current");
+    for (const other of links) {
+      if (other !== link) other.removeAttribute("aria-current");
+    }
     activeLink = link;
     link.setAttribute("aria-current", current);
     nav.style.setProperty("--active-index", links.indexOf(link));
@@ -154,7 +156,40 @@
     return;
   }
 
+  // Keep an explicit destination selected during native smooth scrolling and
+  // when a short final section cannot reach the top of the viewport.
+  let destination;
+  function selectDestination(hash) {
+    const target = document.getElementById(hash.slice(1));
+    destination = sections.find(entry => target && (entry.section === target || entry.section.contains(target)));
+    if (destination) activate(destination.link);
+  }
+  document.addEventListener("click", event => {
+    if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    if (event.target.closest("#back-to-top")) { resumeScrollTracking(); return; }
+    const anchor = event.target.closest("a[href]");
+    if (!anchor || anchor.target === "_blank" || anchor.hasAttribute("download")) return;
+    const url = new URL(anchor.href);
+    if (url.origin === location.origin && url.pathname === location.pathname) selectDestination(url.hash);
+  });
+  addEventListener("hashchange", () => { selectDestination(location.hash); scheduleUpdate(); });
+  function resumeScrollTracking() {
+    destination = null;
+    scheduleUpdate();
+  }
+  addEventListener("wheel", resumeScrollTracking, { passive: true });
+  addEventListener("touchmove", resumeScrollTracking, { passive: true });
+  addEventListener("keydown", event => {
+    if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key) &&
+        !event.target.closest("input, textarea, select, button, [contenteditable]")) resumeScrollTracking();
+  });
+  addEventListener("pointerdown", event => {
+    if (event.clientX >= document.documentElement.clientWidth || event.target.closest("#back-to-top")) resumeScrollTracking();
+  });
+  selectDestination(location.hash);
+
   function update() {
+    if (destination) { activate(destination.link); return; }
     const ordered = [...sections].sort((a, b) => a.section.getBoundingClientRect().top - b.section.getBoundingClientRect().top);
     let current = ordered[0];
     for (const entry of ordered) {

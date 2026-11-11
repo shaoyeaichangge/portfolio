@@ -8,8 +8,8 @@
 <title>技能 · 张同学</title>
 <script>
   const section = location.hash.slice(1);
-  const sections = ["analysis", "visualization", "writing", "support", "tools-title"];
-  location.replace("./index.html#" + (sections.includes(section) ? section : "skills"));
+  const sections = ["analysis", "visualization", "support", "tools-title"];
+  location.replace("./index.html#" + (section === "writing" ? "xiaohongshu" : sections.includes(section) ? section : "skills"));
 </script>
 </head>
 <body><a href="./index.html#skills">查看首页的技能介绍</a></body>
