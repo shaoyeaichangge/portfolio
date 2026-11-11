@@ -81,13 +81,18 @@
   let hoverItem;
   function clearItemLight() {
     if (!hoverItem) return;
-    for (const property of ["--item-shine-x", "--item-shine-y", "--item-shift-x", "--item-shift-y", "--item-tilt-x", "--item-tilt-y", "--content-shift-x"]) hoverItem.style.removeProperty(property);
+    hoverItem.style.removeProperty("--content-shift-x");
     hoverItem = null;
   }
   nav.addEventListener("pointermove", event => {
-    if (event.pointerType !== "mouse" || reduceMotion.matches || reduceTransparency.matches) return;
+    if (event.pointerType !== "mouse") return;
     cancelAnimationFrame(lightFrame);
     lightFrame = requestAnimationFrame(() => {
+      const item = event.target.closest("a");
+      if (item !== hoverItem) clearItemLight();
+      if (item && nav.contains(item)) hoverItem = item;
+      syncPreview();
+      if (reduceMotion.matches || reduceTransparency.matches) return;
       const rect = nav.getBoundingClientRect();
       nav.style.setProperty("--shine-x", `${event.clientX - rect.left}px`);
       nav.style.setProperty("--shine-y", `${event.clientY - rect.top}px`);
@@ -95,21 +100,9 @@
         nav.dataset.pointer = "";
         setLensHover(true);
       }
-      const item = event.target.closest("a");
-      if (item !== hoverItem) clearItemLight();
-      if (!item || !nav.contains(item)) return;
-      hoverItem = item;
+      if (!hoverItem) return;
       const bounds = item.getBoundingClientRect();
-      const x = event.clientX - bounds.left;
-      const y = event.clientY - bounds.top;
-      const horizontal = x / bounds.width - .5;
-      const vertical = y / bounds.height - .5;
-      item.style.setProperty("--item-shine-x", `${x}px`);
-      item.style.setProperty("--item-shine-y", `${y}px`);
-      item.style.setProperty("--item-shift-x", `${horizontal * 5}px`);
-      item.style.setProperty("--item-shift-y", `${-3 + vertical * 2}px`);
-      item.style.setProperty("--item-tilt-x", `${vertical * -7}deg`);
-      item.style.setProperty("--item-tilt-y", `${horizontal * 7}deg`);
+      const horizontal = (event.clientX - bounds.left) / bounds.width - .5;
       item.style.setProperty("--content-shift-x", `${horizontal * 3}px`);
     });
   });
@@ -119,6 +112,7 @@
     nav.style.removeProperty("--shine-x");
     nav.style.removeProperty("--shine-y");
     clearItemLight();
+    syncPreview();
     setLensHover(false);
   }
   nav.addEventListener("pointerleave", resetHover);
@@ -126,6 +120,19 @@
   reduceTransparency.addEventListener("change", resetHover);
   const links = [...nav.querySelectorAll("a")];
   let activeLink;
+  function syncPreview() {
+    const item = nav.querySelector("a:focus-visible") || hoverItem;
+    if (item) {
+      nav.style.setProperty("--preview-index", links.indexOf(item));
+      nav.dataset.preview = "";
+    } else {
+      nav.style.removeProperty("--preview-index");
+      nav.removeAttribute("data-preview");
+    }
+  }
+  nav.addEventListener("focusin", syncPreview);
+  nav.addEventListener("focusout", () => queueMicrotask(syncPreview));
+  addEventListener("blur", resetHover);
 
   function activate(link, current = "location") {
     if (!link || link === activeLink) return;
