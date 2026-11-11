@@ -79,8 +79,9 @@ html { scroll-padding-bottom: 100px; }
 .bottom-nav a:focus-visible { outline: 2px solid #36587b; outline-offset: -2px; }
 .bottom-nav svg { width: 19px; height: 19px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .bottom-nav a > svg, .bottom-nav a > span { transition: transform .24s cubic-bezier(.2, .9, .25, 1.3), filter .2s; }
-.bottom-nav a::after { position: absolute; bottom: 4px; left: calc(50% - 2px); width: 4px; height: 4px; border-radius: 50%; background: #36587b; content: ""; opacity: 0; transition: opacity .18s; pointer-events: none; }
-.bottom-nav[data-preview] a[aria-current]::after { opacity: 1; }
+.bottom-nav a > span { position: relative; }
+.bottom-nav a > span::after { position: absolute; top: calc(100% + 3px); left: calc(50% - 2px); width: 4px; height: 4px; border-radius: 50%; background: #36587b; content: ""; opacity: 0; transition: opacity .18s; pointer-events: none; }
+.bottom-nav[data-preview] a[aria-current] > span::after { opacity: 1; }
 @media (hover: hover) and (pointer: fine) {
   .bottom-nav[data-pointer]::after {
     background:
@@ -107,7 +108,7 @@ html { scroll-padding-bottom: 100px; }
   .footer { padding-right: 60px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bottom-nav::before, .bottom-nav a::after, .bottom-nav a > svg, .bottom-nav a > span { transition: none; }
+  .bottom-nav::before, .bottom-nav a > span::after, .bottom-nav a > svg, .bottom-nav a > span { transition: none; }
   .bottom-nav::before { --lens-lift: 0px; --lens-scale: 1; }
   .bottom-nav a:hover > svg, .bottom-nav a:hover > span { transform: none; }
 }
