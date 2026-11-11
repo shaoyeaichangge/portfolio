@@ -3,6 +3,7 @@
   if (!nav) return;
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
   const reduceTransparency = matchMedia("(prefers-reduced-transparency: reduce), (prefers-contrast: more)");
+  let setLensHover = () => {};
 
   // A capsule-shaped displacement map bends the real backdrop only near its rim.
   // Build it on resize rather than reading or copying the page into a canvas.
@@ -14,6 +15,25 @@
     defs.innerHTML = '<defs><filter id="nav-glass-lens" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="soft"/><feImage result="lens" preserveAspectRatio="none"/><feDisplacementMap in="soft" in2="lens" scale="30" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';
     document.body.append(defs);
     const lensImage = defs.querySelector("feImage");
+    const displacement = defs.querySelector("feDisplacementMap");
+    let lensFrame = 0;
+    let lensStrength = 30;
+    setLensHover = hovered => {
+      cancelAnimationFrame(lensFrame);
+      const from = lensStrength;
+      const target = hovered && !reduceMotion.matches && !reduceTransparency.matches ? 42 : 30;
+      const start = performance.now();
+      function step(now) {
+        const progress = Math.min((now - start) / 180, 1);
+        lensStrength = from + (target - from) * (1 - Math.pow(1 - progress, 3));
+        displacement.setAttribute("scale", lensStrength.toFixed(2));
+        if (progress < 1) lensFrame = requestAnimationFrame(step);
+      }
+      if (reduceMotion.matches || reduceTransparency.matches) {
+        lensStrength = 30;
+        displacement.setAttribute("scale", "30");
+      } else if (from !== target) lensFrame = requestAnimationFrame(step);
+    };
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     let previousSize = "";
@@ -58,6 +78,12 @@
   }
 
   let lightFrame = 0;
+  let hoverItem;
+  function clearItemLight() {
+    if (!hoverItem) return;
+    for (const property of ["--item-shine-x", "--item-shine-y", "--item-shift-x", "--item-shift-y", "--item-tilt-x", "--item-tilt-y", "--content-shift-x"]) hoverItem.style.removeProperty(property);
+    hoverItem = null;
+  }
   nav.addEventListener("pointermove", event => {
     if (event.pointerType !== "mouse" || reduceMotion.matches || reduceTransparency.matches) return;
     cancelAnimationFrame(lightFrame);
@@ -65,13 +91,39 @@
       const rect = nav.getBoundingClientRect();
       nav.style.setProperty("--shine-x", `${event.clientX - rect.left}px`);
       nav.style.setProperty("--shine-y", `${event.clientY - rect.top}px`);
+      if (!nav.hasAttribute("data-pointer")) {
+        nav.dataset.pointer = "";
+        setLensHover(true);
+      }
+      const item = event.target.closest("a");
+      if (item !== hoverItem) clearItemLight();
+      if (!item || !nav.contains(item)) return;
+      hoverItem = item;
+      const bounds = item.getBoundingClientRect();
+      const x = event.clientX - bounds.left;
+      const y = event.clientY - bounds.top;
+      const horizontal = x / bounds.width - .5;
+      const vertical = y / bounds.height - .5;
+      item.style.setProperty("--item-shine-x", `${x}px`);
+      item.style.setProperty("--item-shine-y", `${y}px`);
+      item.style.setProperty("--item-shift-x", `${horizontal * 5}px`);
+      item.style.setProperty("--item-shift-y", `${-3 + vertical * 2}px`);
+      item.style.setProperty("--item-tilt-x", `${vertical * -7}deg`);
+      item.style.setProperty("--item-tilt-y", `${horizontal * 7}deg`);
+      item.style.setProperty("--content-shift-x", `${horizontal * 3}px`);
     });
   });
-  nav.addEventListener("pointerleave", () => {
+  function resetHover() {
     cancelAnimationFrame(lightFrame);
+    nav.removeAttribute("data-pointer");
     nav.style.removeProperty("--shine-x");
     nav.style.removeProperty("--shine-y");
-  });
+    clearItemLight();
+    setLensHover(false);
+  }
+  nav.addEventListener("pointerleave", resetHover);
+  reduceMotion.addEventListener("change", resetHover);
+  reduceTransparency.addEventListener("change", resetHover);
   const links = [...nav.querySelectorAll("a")];
   let activeLink;
 

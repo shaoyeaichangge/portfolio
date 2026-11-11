@@ -72,17 +72,52 @@ html { scroll-padding-bottom: 100px; }
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
 }
-.bottom-nav a:hover { color: #203f65; background: #ffffff38; }
+.bottom-nav a::before {
+  position: absolute;
+  z-index: -1;
+  inset: -3px -1px;
+  border: 1px solid #ffffffed;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at var(--item-shine-x, 50%) var(--item-shine-y, 0%), #fffffff2, #ffffff33 48%, transparent 76%),
+    linear-gradient(155deg, #ffffff94, #d2e6ff38 48%, #9ebfe947);
+  box-shadow: inset 0 2px 1px #fff, inset 0 -2px 3px #587ba647, 0 9px 20px -5px #29466e45, 0 0 0 1px #83a7d333;
+  content: "";
+  opacity: 0;
+  transform: perspective(360px) translate3d(0, 2px, 0) scale(.92);
+  transition: opacity .16s, transform .24s cubic-bezier(.2, .9, .25, 1.3);
+  pointer-events: none;
+}
+.bottom-nav a:hover { color: #203f65; }
 .bottom-nav a[aria-current] { color: #203f65; font-weight: 600; }
 .bottom-nav a:focus-visible { outline: 2px solid #36587b; outline-offset: -2px; }
 .bottom-nav svg { width: 19px; height: 19px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.bottom-nav a > svg, .bottom-nav a > span { transition: transform .24s cubic-bezier(.2, .9, .25, 1.3), filter .2s; }
+.bottom-nav a:focus-visible::before { opacity: 1; transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .bottom-nav[data-pointer]::after {
+    background:
+      radial-gradient(ellipse 110px 65px at var(--shine-x) var(--shine-y), #fffffff2, #ffffff66 42%, transparent 76%),
+      linear-gradient(180deg, #ffffff80, transparent 28%, transparent 68%, #ffffff59);
+  }
+  .bottom-nav[data-pointer]::before { opacity: .5; }
+  .bottom-nav a:hover::before {
+    opacity: 1;
+    transform: perspective(360px) translate3d(var(--item-shift-x, 0px), var(--item-shift-y, -3px), 0) rotateX(var(--item-tilt-x, 0deg)) rotateY(var(--item-tilt-y, 0deg)) scale(1.025);
+  }
+  .bottom-nav a:hover > svg { transform: translate3d(var(--content-shift-x, 0px), -3px, 0) scale(1.2); filter: drop-shadow(0 2px 3px #36587b26); }
+  .bottom-nav a:hover > span { transform: translate3d(var(--content-shift-x, 0px), -2px, 0) scale(1.06); }
+  .bottom-nav a:active::before { transform: translateY(1px) scale(.98); }
+  .bottom-nav a:active > svg, .bottom-nav a:active > span { transform: scale(.97); }
+}
 @media (max-width: 760px) {
   .bottom-nav a { flex-direction: column; gap: 3px; min-height: 54px; font-size: 11px; line-height: 16px; }
   .back-to-top { bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
   .footer { padding-right: 60px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bottom-nav::before { transition: none; }
+  .bottom-nav::before, .bottom-nav a::before, .bottom-nav a > svg, .bottom-nav a > span { transition: none; }
+  .bottom-nav a:hover::before, .bottom-nav a:active::before, .bottom-nav a:hover > svg, .bottom-nav a:hover > span { transform: none; }
 }
 .nav-glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -91,4 +126,6 @@ html { scroll-padding-bottom: 100px; }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .bottom-nav { background: #edf4ff; backdrop-filter: none; -webkit-backdrop-filter: none; }
   .bottom-nav::after { background: none; }
+  .bottom-nav[data-pointer]::after { background: none; }
+  .bottom-nav a::before { background: #f7fbff; }
 }
