@@ -66,6 +66,8 @@ header {
 .nav-links { display: flex; gap: 4px; padding: 4px; border: 1px solid #fff; border-radius: 999px; background: #dce6f380; }
 .nav-links a { padding: 8px 16px; border-radius: 999px; color: var(--muted); font-size: 14px; text-decoration: none; white-space: nowrap; }
 .nav-links a:hover { color: var(--ink); background: #ffffffd6; }
+.skills-page-link { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; margin-top: 12px; color: var(--accent); font-size: 14px; font-weight: 500; text-decoration: none; }
+.skills-page-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 main { margin-block: 24px 32px; }
 .hero, .empty-state, .project {
   border: 1px solid rgba(255, 255, 255, .95);
@@ -396,6 +398,11 @@ main { margin-block: 24px 32px; }
   .toolbar { align-items: stretch; flex-direction: column; }
   .category-label { width: 100%; }
 }
+@media (max-width: 480px) {
+  .nav .brand { font-size: 16px; white-space: nowrap; }
+  .nav .brand-mark { display: none; }
+  .nav-links a { padding-inline: 6px; font-size: 13px; }
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .hero-proof { transition: none; }
@@ -408,7 +415,7 @@ main { margin-block: 24px 32px; }
 <a class="skip" href="#main">跳到主要内容</a>
 <header><nav class="nav" aria-label="页面导航">
 <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">张</span>张同学</a>
-<div class="nav-links"><a href="#works">作品集</a><a href="#simulation">仿真</a><a href="#xiaohongshu">内容创作</a></div>
+<div class="nav-links"><a href="#works">作品集</a><a href="#simulation">仿真</a><a href="./skills.html">技能</a><a href="#xiaohongshu">内容创作</a></div>
 </nav></header>
 <main id="main" tabindex="-1">
 <section class="hero" aria-labelledby="hero-title">
@@ -484,6 +491,7 @@ main { margin-block: 24px 32px; }
       <li>ANSYS Mechanical</li>
       <li>SolidWorks</li>
     </ul>
+    <a class="skills-page-link" href="./skills.html">了解我的技能 <span aria-hidden="true">↗</span></a>
   </div>
 </section>
 <section class="creator-intro" id="xiaohongshu" aria-labelledby="creator-title">
