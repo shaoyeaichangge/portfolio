@@ -99,6 +99,7 @@ main { margin-block: 24px 32px; }
   letter-spacing: -.03em;
 }
 .hero-title span { display: block; }
+.hero-title .hero-greeting { font-family: var(--font-ui); font-size: .75em; letter-spacing: -.02em; }
 .hero-title span + span { color: #b8d9fa; }
 .research { margin-top: 16px; max-width: 680px; color: var(--muted); font-size: 14px; line-height: 24px; }
 .hero .research { color: #c6d7e9; font: 400 16px/1.6 var(--font-hero); text-wrap: balance; }
@@ -412,10 +413,10 @@ main { margin-block: 24px 32px; }
 <main id="main" tabindex="-1">
 <section class="hero" aria-labelledby="hero-title">
   <div class="hero-copy">
-    <p class="hero-identity">张同学 · 机械工程硕士在读</p>
-    <h1 id="hero-title" class="hero-title"><span>我做仿真，</span> <span>也画示意图</span></h1>
-    <p class="research">负责泵类设备的流动与噪声仿真，对比不同结构方案。</p>
-    <a class="hero-cta" href="#works">浏览代表作 <span aria-hidden="true">↓</span></a>
+    <p class="hero-identity">机械工程硕士在读</p>
+    <h1 id="hero-title" class="hero-title"><span class="hero-greeting">Hello,</span> <span>我是张同学</span></h1>
+    <p class="research">我主要做计算流体动力学（CFD）和流固相互作用（FSI）相关的仿真。</p>
+    <a class="hero-cta" href="#works">往下看看我的作品 <span aria-hidden="true">↓</span></a>
   </div>
   <div data-image-gallery>
     <a class="hero-proof" href="./assets/research-workflow-redacted.png"
@@ -434,6 +435,43 @@ main { margin-block: 24px 32px; }
     </a>
     <a href="./assets/technical-architecture-redacted.png" data-image-item data-image-title="多模块技术架构" hidden>多模块技术架构</a>
   </div>
+</section>
+<div class="portfolio-layout">
+<section class="catalog" id="works" aria-labelledby="works-title">
+  <div class="catalog-heading">
+    <h2 id="works-title">精选作品</h2>
+    <p class="result-count" id="result-count" role="status" aria-live="polite">0 件作品</p>
+  </div>
+  <div class="toolbar" id="toolbar" hidden>
+    <label class="search-label"><span class="sr-only">搜索作品</span><input id="search" type="search" placeholder="搜索作品标题、简介" autocomplete="off"></label>
+    <label class="category-label"><span class="sr-only">作品分类</span><select id="category"><option value="">全部分类</option></select></label>
+  </div>
+  <div class="works-grid" id="works-grid" hidden></div>
+  <div class="empty-state" id="empty-state">
+    <h3 id="empty-title">作品整理中</h3>
+    <p id="empty-description">后续作品将在这里陆续展示。</p>
+  </div>
+  <button class="more" id="load-more" type="button" hidden>加载更多</button>
+  <noscript><p class="research">启用 JavaScript 后可以浏览作品集。</p></noscript>
+</section>
+<aside class="github-projects" aria-labelledby="github-title">
+  <div class="catalog-heading"><h2 id="github-title">GitHub 项目</h2></div>
+  <article class="project github-card">
+    <a class="project-link" href="https://github.com/shaoyeaichangge/phone-speaker-bridge" target="_blank" rel="noopener noreferrer">
+      <img class="github-cover" src="./assets/phone-speaker-bridge-receiver.png" width="540" height="360" alt="项目手机接收页待连接时的界面，包含 Listen、Mic 和 Start 控件" loading="lazy" decoding="async">
+      <div class="project-body">
+        <p class="project-category">开源实践 · 手机接收页截图</p>
+        <h3>Phone Speaker Bridge</h3>
+        <p class="github-description">它能把 Windows 电脑的声音通过局域网传到手机浏览器。我改了双击启动的流程，也补了音频采集出错后的恢复处理。</p>
+        <p class="project-action">查看 GitHub 仓库 <span aria-hidden="true">↗</span><span class="sr-only">（在新标签页打开）</span></p>
+      </div>
+    </a>
+  </article>
+</aside>
+</div>
+<section class="simulation-section" id="simulation" aria-labelledby="simulation-title">
+  <div class="catalog-heading"><h2 id="simulation-title">仿真作品</h2></div>
+  <div class="works-grid" id="simulation-grid"></div>
 </section>
 <section class="about-section project" id="about" aria-labelledby="about-title">
   <div class="catalog-heading"><h2 id="about-title">关于我</h2></div>
@@ -489,43 +527,6 @@ main { margin-block: 24px 32px; }
       </div>
     </div>
   </div>
-</section>
-<div class="portfolio-layout">
-<section class="catalog" id="works" aria-labelledby="works-title">
-  <div class="catalog-heading">
-    <h2 id="works-title">精选作品</h2>
-    <p class="result-count" id="result-count" role="status" aria-live="polite">0 件作品</p>
-  </div>
-  <div class="toolbar" id="toolbar" hidden>
-    <label class="search-label"><span class="sr-only">搜索作品</span><input id="search" type="search" placeholder="搜索作品标题、简介" autocomplete="off"></label>
-    <label class="category-label"><span class="sr-only">作品分类</span><select id="category"><option value="">全部分类</option></select></label>
-  </div>
-  <div class="works-grid" id="works-grid" hidden></div>
-  <div class="empty-state" id="empty-state">
-    <h3 id="empty-title">作品整理中</h3>
-    <p id="empty-description">后续作品将在这里陆续展示。</p>
-  </div>
-  <button class="more" id="load-more" type="button" hidden>加载更多</button>
-  <noscript><p class="research">启用 JavaScript 后可以浏览作品集。</p></noscript>
-</section>
-<aside class="github-projects" aria-labelledby="github-title">
-  <div class="catalog-heading"><h2 id="github-title">GitHub 项目</h2></div>
-  <article class="project github-card">
-    <a class="project-link" href="https://github.com/shaoyeaichangge/phone-speaker-bridge" target="_blank" rel="noopener noreferrer">
-      <img class="github-cover" src="./assets/phone-speaker-bridge-receiver.png" width="540" height="360" alt="项目手机接收页待连接时的界面，包含 Listen、Mic 和 Start 控件" loading="lazy" decoding="async">
-      <div class="project-body">
-        <p class="project-category">开源实践 · 手机接收页截图</p>
-        <h3>Phone Speaker Bridge</h3>
-        <p class="github-description">它能把 Windows 电脑的声音通过局域网传到手机浏览器。我改了双击启动的流程，也补了音频采集出错后的恢复处理。</p>
-        <p class="project-action">查看 GitHub 仓库 <span aria-hidden="true">↗</span><span class="sr-only">（在新标签页打开）</span></p>
-      </div>
-    </a>
-  </article>
-</aside>
-</div>
-<section class="simulation-section" id="simulation" aria-labelledby="simulation-title">
-  <div class="catalog-heading"><h2 id="simulation-title">仿真作品</h2></div>
-  <div class="works-grid" id="simulation-grid"></div>
 </section>
 <section class="skills-section" id="skills" aria-labelledby="skills-title">
   <div class="catalog-heading"><h2 id="skills-title">日常技能</h2></div>
