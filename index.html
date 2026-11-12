@@ -393,11 +393,18 @@ main { margin-block: 24px 32px; }
 <link rel="stylesheet" href="./image-viewer.css">
 <link rel="stylesheet" href="./skills.css?v=skill-contrast-4">
 <link rel="stylesheet" href="./bottom-nav.css?v=dock-arrow-7">
+<link rel="stylesheet" href="./site-clock.css?v=1">
 </head>
 <body id="top">
 <a class="skip" href="#main">跳到主要内容</a>
 <header><nav class="nav" aria-label="页面导航">
+<div class="header-identity">
+  <div class="site-clock" role="timer" aria-live="off" aria-label="设备本地时间" hidden>
+    <time class="clock-time"><span class="clock-main">--:--</span><span class="clock-colon" aria-hidden="true">:</span><span class="clock-seconds">--</span></time>
+    <span class="clock-date"></span>
+  </div>
 <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">张</span>张同学</a>
+</div>
 <div class="nav-links"><a href="#works">作品集</a><a href="#simulation">仿真</a><a href="#skills">技能</a><a href="#xiaohongshu">内容创作</a></div>
 </nav></header>
 <main id="main" tabindex="-1">
@@ -536,5 +543,6 @@ main { margin-block: 24px 32px; }
 <script src="./portfolio.js"></script>
 <script src="./image-viewer.js"></script>
 <script src="./bottom-nav.js?v=liquid-glass-location-6"></script>
+<script src="./site-clock.js?v=1"></script>
 </body>
 </html>
