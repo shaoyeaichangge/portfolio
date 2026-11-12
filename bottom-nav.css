@@ -104,8 +104,13 @@ html { scroll-padding-bottom: 100px; }
 }
 @media (max-width: 760px) {
   .bottom-nav a { flex-direction: column; gap: 3px; min-height: 54px; font-size: 11px; line-height: 16px; }
-  .back-to-top { bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
-  .footer { padding-right: 60px; }
+}
+.bottom-dock { position: fixed; z-index: 10; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: grid; grid-template-columns: minmax(0, 1fr) 44px; align-items: center; gap: 12px; width: min(676px, calc(100% - 32px)); }
+.bottom-dock .bottom-nav { position: relative; left: auto; bottom: auto; width: 100%; min-width: 0; transform: none; }
+.bottom-dock .back-to-top { position: relative; right: auto; bottom: auto; width: 44px; height: 44px; min-width: 44px; min-height: 44px; background: linear-gradient(145deg, #ffffffb3, #dceaff66); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 0 0 1px #58759926, 0 6px 18px #29456b1a, inset 0 1px 1px #fff; }
+.bottom-dock .back-to-top:hover { background: #f7fbffe6; }
+@media (max-width: 480px) {
+  .bottom-dock { width: calc(100% - 16px); gap: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bottom-nav::before, .bottom-nav a > span::after, .bottom-nav a > svg, .bottom-nav a > span { transition: none; }
