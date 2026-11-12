@@ -204,19 +204,13 @@ main { margin-block: 24px 32px; }
   border-radius: 16px;
   background: #ffffff26;
 }
-.creator-channel-heading { display: flex; align-items: center; gap: 8px; }
-.creator-icon {
-  display: grid;
-  place-items: center;
-  flex: 0 0 40px;
-  height: 40px;
-  border: 1px solid #ffffffd9;
-  border-radius: 8px;
-  color: var(--accent);
-  background: #f7fbffbd;
-}
-.creator-icon svg { width: 20px; height: 20px; }
-.creator-channel h3 { font-size: 14px; line-height: 20px; font-weight: 600; }
+.creator-channel-heading { display: flex; align-items: center; gap: 12px; }
+.creator-avatar { display: block; flex: 0 0 52px; width: 52px; height: 52px; overflow: hidden; border: 2px solid #fffffff2; border-radius: 15px; background: #e4edf8; box-shadow: 0 3px 10px #29456b14; }
+.creator-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.creator-avatar-wechat img { transform: scale(4.48); }
+.creator-identity { min-width: 0; }
+.creator-channel h3 { font-size: 16px; line-height: 24px; font-weight: 600; overflow-wrap: anywhere; }
+.creator-identity .account { margin-top: 3px; }
 .creator-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .account { color: var(--muted); font-size: 12px; line-height: 16px; font-variant-numeric: tabular-nums; user-select: all; }
 .creator-link {
@@ -497,14 +491,10 @@ main { margin-block: 24px 32px; }
   <div class="creator-links">
     <div class="creator-channel">
       <div class="creator-channel-heading">
-        <span class="creator-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 4h10a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm-2 14a2 2 0 0 1 2-2h12M8 8h6m-6 4h4"/>
-          </svg>
-        </span>
-        <div>
-          <h3>小红书</h3>
-          <p class="account">1581015977</p>
+        <span class="creator-avatar"><img src="./assets/xiaohongshu-avatar.webp" width="540" height="540" loading="lazy" alt="阿晋学长的小红书头像"></span>
+        <div class="creator-identity">
+          <h3>阿晋学长（市调版）</h3>
+          <p class="account">小红书 · 1581015977</p>
         </div>
       </div>
       <p class="creator-description">保研怎么准备、大学竞赛怎么入门，我会在这里分享经验和建议。</p>
@@ -515,14 +505,10 @@ main { margin-block: 24px 32px; }
     </div>
     <div class="creator-channel">
       <div class="creator-channel-heading">
-        <span class="creator-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 5h16v11H9l-5 3V5Zm4 4h8m-8 3h5"/>
-          </svg>
-        </span>
-        <div>
-          <h3>微信公众号</h3>
-          <p class="account">弦外 Max</p>
+        <span class="creator-avatar creator-avatar-wechat"><img src="./assets/wechat-xianwai-max-qr.png" width="430" height="430" loading="lazy" alt="弦外 Max 的公众号头像"></span>
+        <div class="creator-identity">
+          <h3>弦外 Max</h3>
+          <p class="account">微信公众号</p>
         </div>
       </div>
       <p class="creator-description">分享好用的电脑软件和操作技巧，让日常工作省点时间。</p>
