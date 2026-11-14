@@ -105,12 +105,59 @@
   let width = 0;
   let height = 0;
   let paths = [];
+  let basePaths = [];
+  let basePoints = [];
   let visible = true;
   let frame = 0;
   let previous = 0;
   let phase = 0;
   let observerPaused = false;
+  const flowPointer = { active: false, x: 0, y: 0, targetX: 0, targetY: 0, strength: 0 };
   const canAnimate = () => visible && !document.hidden && !reduceMotion.matches && !observerPaused;
+
+  function resetFlow(immediate = false) {
+    flowPointer.active = false;
+    if (immediate) { flowPointer.strength = 0; paths = basePaths; }
+  }
+  hero.addEventListener("pointermove", event => {
+    if (event.pointerType !== "mouse" || !finePointer.matches || !canAnimate()) return;
+    const box = hero.getBoundingClientRect();
+    flowPointer.targetX = event.clientX - box.left;
+    flowPointer.targetY = event.clientY - box.top;
+    if (!flowPointer.active && flowPointer.strength < .001) {
+      flowPointer.x = flowPointer.targetX;
+      flowPointer.y = flowPointer.targetY;
+    }
+    flowPointer.active = true;
+  }, { passive: true });
+  hero.addEventListener("pointerleave", () => resetFlow());
+
+  function deformFlow(elapsed) {
+    flowPointer.x += (flowPointer.targetX - flowPointer.x) * (1 - Math.exp(-elapsed / 85));
+    flowPointer.y += (flowPointer.targetY - flowPointer.y) * (1 - Math.exp(-elapsed / 85));
+    flowPointer.strength += ((flowPointer.active ? 1 : 0) - flowPointer.strength) * (1 - Math.exp(-elapsed / 150));
+    if (!flowPointer.active && flowPointer.strength < .001) {
+      flowPointer.strength = 0;
+      paths = basePaths;
+      return;
+    }
+    const radius = Math.min(122, height * .2, width * .22);
+    const radiusX2 = 2 * (radius * 1.55) ** 2;
+    const radiusY2 = 2 * (radius * 1.5) ** 2;
+    // A smooth local displacement keeps neighboring decorative lines ordered.
+    paths = basePoints.map(points => {
+      const path = new Path2D();
+      for (let i = 0; i < points.length; i += 2) {
+        const x = points[i], y = points[i + 1];
+        const dx = x - flowPointer.x, dy = y - flowPointer.y;
+        const influence = Math.exp(-dx * dx / radiusX2 - dy * dy / radiusY2) * flowPointer.strength;
+        const px = x + dx / radius * influence * 12;
+        const py = y + Math.tanh(dy / (radius * .36)) * influence * radius * .84;
+        i ? path.lineTo(px, py) : path.moveTo(px, py);
+      }
+      return path;
+    });
+  }
 
   function buildPaths() {
     const box = hero.getBoundingClientRect();
@@ -121,8 +168,10 @@
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    paths = Array.from({ length: width < 600 ? 22 : 34 }, (_, row) => {
+    basePoints = [];
+    basePaths = Array.from({ length: width < 600 ? 22 : 34 }, (_, row) => {
       const p = new Path2D();
+      const points = [];
       const base = row / (width < 600 ? 21 : 33);
       for (let step = 0; step <= 100; step++) {
         const t = step / 100;
@@ -130,9 +179,12 @@
         const bend = Math.exp(-Math.pow((t - .61) / .25, 2));
         const y = height * (.27 + base * .68) - bend * height * (.23 + Math.sin(base * Math.PI) * .18) + Math.sin(t * 5 + base * 2) * 14;
         step ? p.lineTo(x, y) : p.moveTo(x, y);
+        points.push(x, y);
       }
+      basePoints.push(new Float32Array(points));
       return p;
     });
+    resetFlow(true);
     draw();
   }
 
@@ -147,6 +199,15 @@
     context.lineWidth = .7;
     context.setLineDash([]);
     paths.forEach(path => context.stroke(path));
+    if (flowPointer.strength > .001) {
+      const glow = context.createRadialGradient(flowPointer.x, flowPointer.y, 0, flowPointer.x, flowPointer.y, Math.min(280, width * .4));
+      glow.addColorStop(0, `rgba(180,218,255,${.3 * flowPointer.strength})`);
+      glow.addColorStop(.6, `rgba(160,203,247,${.1 * flowPointer.strength})`);
+      glow.addColorStop(1, "rgba(160,203,247,0)");
+      context.strokeStyle = glow;
+      context.lineWidth = .9;
+      paths.forEach(path => context.stroke(path));
+    }
     context.lineWidth = 1.15;
     context.strokeStyle = "rgba(184,220,255,.38)";
     paths.forEach((path, index) => {
@@ -161,8 +222,10 @@
   function tick(now) {
     if (!canAnimate()) { frame = 0; return; }
     if (!previous || now - previous >= 32) {
-      phase += Math.min(now - (previous || now), 60) * .035;
+      const elapsed = Math.min(now - (previous || now), 60);
+      phase += elapsed * .035;
       previous = now;
+      deformFlow(elapsed);
       draw();
     }
     frame = requestAnimationFrame(tick);
@@ -177,11 +240,12 @@
     }
   }
   new ResizeObserver(buildPaths).observe(hero);
-  new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); }).observe(hero);
+  new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (!visible) resetFlow(true); sync(); }).observe(hero);
   const viewer = document.querySelector(".image-viewer");
-  if (viewer) new MutationObserver(() => { observerPaused = viewer.open; sync(); }).observe(viewer, { attributes: true, attributeFilter: ["open"] });
-  reduceMotion.addEventListener("change", sync);
-  document.addEventListener("visibilitychange", sync);
+  if (viewer) new MutationObserver(() => { observerPaused = viewer.open; if (observerPaused) resetFlow(true); sync(); }).observe(viewer, { attributes: true, attributeFilter: ["open"] });
+  reduceMotion.addEventListener("change", () => { resetFlow(true); sync(); });
+  finePointer.addEventListener("change", () => { resetFlow(true); sync(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) resetFlow(true); sync(); });
   window.addEventListener("pagehide", () => { cancelAnimationFrame(frame); frame = 0; });
   window.addEventListener("pageshow", sync);
   buildPaths();

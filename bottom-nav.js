@@ -81,6 +81,69 @@
   let hoverItem;
   let drag = null;
   let ignorePointerClickUntil = 0;
+  let elastic = null;
+  let elasticFrame = 0;
+
+  function stopElastic() {
+    cancelAnimationFrame(elasticFrame);
+    elasticFrame = 0;
+    elastic = null;
+    nav.removeAttribute("data-elastic");
+    for (const key of ["--lens-position", "--lens-stretch", "--lens-compress", "--lens-origin", "--lens-energy"]) nav.style.removeProperty(key);
+  }
+  function writeElastic() {
+    const position = Math.max(0, Math.min(links.length - 1, elastic.position));
+    const stretch = Math.max(.97, Math.min(1.22, elastic.stretch));
+    nav.style.setProperty("--lens-position", position.toFixed(4));
+    nav.style.setProperty("--lens-stretch", stretch.toFixed(4));
+    nav.style.setProperty("--lens-compress", (1 - (stretch - 1) * .32).toFixed(4));
+    nav.style.setProperty("--lens-origin", `${position / Math.max(1, links.length - 1) * 100}%`);
+    nav.style.setProperty("--lens-energy", Math.min(1, Math.abs(stretch - 1) / .22).toFixed(3));
+  }
+  function animateElastic(now) {
+    elasticFrame = 0;
+    if (!elastic || reduceMotion.matches || document.hidden) { stopElastic(); return; }
+    const dt = Math.min((now - elastic.time) / 1000, 1 / 30);
+    elastic.time = now;
+    const held = drag?.moving;
+    if (held) elastic.position = drag.position;
+    // Small fixed substeps keep the spring stable on slower displays.
+    const steps = Math.max(1, Math.ceil(dt / (1 / 120)));
+    const step = dt / steps;
+    const speed = held ? Math.abs(drag.velocity) * Math.exp(-Math.max(0, now - drag.lastMove) / 85) : 0;
+    const stretchTarget = held ? 1 + Math.min(.22, speed * .025) : 1;
+    for (let i = 0; i < steps; i++) {
+      if (!held) {
+        elastic.velocity += ((elastic.target - elastic.position) * 240 - elastic.velocity * 22) * step;
+        elastic.position += elastic.velocity * step;
+      }
+      elastic.stretchVelocity += ((stretchTarget - elastic.stretch) * 320 - elastic.stretchVelocity * 25) * step;
+      elastic.stretch += elastic.stretchVelocity * step;
+    }
+    writeElastic();
+    if (!held && Math.abs(elastic.position - elastic.target) < .001 && Math.abs(elastic.velocity) < .01 && Math.abs(elastic.stretch - 1) < .001 && Math.abs(elastic.stretchVelocity) < .01) {
+      stopElastic();
+      return;
+    }
+    elasticFrame = requestAnimationFrame(animateElastic);
+  }
+  function startElastic() {
+    if (reduceMotion.matches) return;
+    if (!elastic) {
+      elastic = { position: drag.position, target: drag.position, velocity: 0, stretch: 1, stretchVelocity: 0, time: performance.now() };
+      nav.dataset.elastic = "";
+    }
+    // Position follows the finger immediately; only shape and release settle.
+    elastic.position = drag.position;
+    writeElastic();
+    if (!elasticFrame) elasticFrame = requestAnimationFrame(animateElastic);
+  }
+  function settleElastic(target, velocity = 0) {
+    if (!elastic || reduceMotion.matches) { stopElastic(); return; }
+    elastic.target = target;
+    elastic.velocity = Math.max(-1.5, Math.min(1.5, velocity * .16));
+    if (!elasticFrame) elasticFrame = requestAnimationFrame(animateElastic);
+  }
   function clearItemLight() {
     if (!hoverItem) return;
     hoverItem.style.removeProperty("--content-shift-x");
@@ -117,7 +180,7 @@
     syncPreview();
     setLensHover(false);
   }
-  nav.addEventListener("pointerleave", resetHover);
+  nav.addEventListener("pointerleave", () => { if (!drag?.moving) resetHover(); });
   reduceMotion.addEventListener("change", resetHover);
   reduceTransparency.addEventListener("change", resetHover);
   const links = [...nav.querySelectorAll("a")];
@@ -153,16 +216,27 @@
   }
 
   // Drag changes only the preview. Follow the nearest native link on release.
-  function previewDrag(clientX) {
+  function previewDrag(clientX, clientY) {
     const centers = drag.centers;
     const last = centers.length - 1;
     const x = Math.max(centers[0], Math.min(centers[last], clientX));
     let left = 0;
     while (left < last && x > centers[left + 1]) left++;
-    drag.position = left === last ? last : left + (x - centers[left]) / (centers[left + 1] - centers[left]);
+    const position = left === last ? last : left + (x - centers[left]) / (centers[left + 1] - centers[left]);
+    const now = performance.now();
+    const elapsed = Math.max(8, now - drag.lastMove);
+    const velocity = (position - drag.position) * 1000 / elapsed;
+    drag.velocity = drag.velocity * .35 + Math.max(-18, Math.min(18, velocity)) * .65;
+    drag.lastMove = now;
+    drag.position = position;
     drag.index = Math.round(drag.position);
     links.forEach((link, index) => link.toggleAttribute("data-drag-target", index === drag.index));
     syncPreview();
+    if (!reduceMotion.matches && !reduceTransparency.matches) {
+      nav.style.setProperty("--shine-x", `${clientX - drag.bounds.left}px`);
+      nav.style.setProperty("--shine-y", `${Math.max(0, Math.min(drag.bounds.height, clientY - drag.bounds.top))}px`);
+    }
+    startElastic();
   }
   function finishDrag(commit = false) {
     if (!drag) return;
@@ -172,6 +246,7 @@
     nav.removeAttribute("data-dragging");
     links.forEach(link => link.removeAttribute("data-drag-target"));
     if (gesture.moving) ignorePointerClickUntil = performance.now() + 500;
+    if (gesture.moving) settleElastic(commit ? gesture.index : Number(nav.style.getPropertyValue("--active-index")) || 0, commit ? gesture.velocity : 0);
     resetHover();
     if (nav.hasPointerCapture(gesture.id)) nav.releasePointerCapture(gesture.id);
     if (commit && gesture.moving) {
@@ -184,6 +259,7 @@
     if (!event.isPrimary) { finishDrag(); return; }
     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || !links.length) return;
     finishDrag();
+    stopElastic();
     ignorePointerClickUntil = 0;
     resetHover();
     // Stop an earlier smooth scroll without changing the current viewport.
@@ -193,8 +269,13 @@
       startX: event.clientX,
       startY: event.clientY,
       moving: false,
+      position: 0,
+      velocity: 0,
+      lastMove: performance.now(),
+      bounds: nav.getBoundingClientRect(),
       centers: links.map(link => { const box = link.getBoundingClientRect(); return box.left + box.width / 2; })
     };
+    drag.position = Math.max(0, Math.min(links.length - 1, (event.clientX - drag.centers[0]) / (drag.centers[1] - drag.centers[0] || 1)));
     nav.dataset.pressed = "";
   });
   nav.addEventListener("pointermove", event => {
@@ -206,14 +287,14 @@
       nav.setPointerCapture(event.pointerId);
       setLensHover(true);
     }
-    previewDrag(event.clientX);
+    previewDrag(event.clientX, event.clientY);
   });
   nav.addEventListener("pointerleave", () => {
     if (drag && !drag.moving) finishDrag();
   });
   nav.addEventListener("pointerup", event => {
     if (!drag || event.pointerId !== drag.id) return;
-    if (drag.moving) previewDrag(event.clientX);
+    if (drag.moving) previewDrag(event.clientX, event.clientY);
     finishDrag(true);
   });
   nav.addEventListener("pointercancel", () => finishDrag());
@@ -234,10 +315,12 @@
   }, true);
   addEventListener("keydown", event => {
     if (event.key === "Escape" && drag) { event.preventDefault(); finishDrag(); }
+    else if (["Enter", " "].includes(event.key) && nav.contains(event.target)) stopElastic();
   });
-  addEventListener("blur", () => finishDrag());
-  addEventListener("resize", () => finishDrag());
-  document.addEventListener("visibilitychange", () => { if (document.hidden) finishDrag(); });
+  addEventListener("blur", () => { finishDrag(); stopElastic(); });
+  addEventListener("resize", () => { finishDrag(); stopElastic(); });
+  reduceMotion.addEventListener("change", () => { if (reduceMotion.matches) stopElastic(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { finishDrag(); stopElastic(); } });
 
   const sections = links.flatMap(link => {
     const url = new URL(link.href);
