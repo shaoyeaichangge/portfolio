@@ -79,13 +79,15 @@
 
   let lightFrame = 0;
   let hoverItem;
+  let drag = null;
+  let ignorePointerClickUntil = 0;
   function clearItemLight() {
     if (!hoverItem) return;
     hoverItem.style.removeProperty("--content-shift-x");
     hoverItem = null;
   }
   nav.addEventListener("pointermove", event => {
-    if (event.pointerType !== "mouse") return;
+    if (event.pointerType !== "mouse" || drag) return;
     cancelAnimationFrame(lightFrame);
     lightFrame = requestAnimationFrame(() => {
       const item = event.target.closest("a");
@@ -121,6 +123,11 @@
   const links = [...nav.querySelectorAll("a")];
   let activeLink;
   function syncPreview() {
+    if (drag?.moving) {
+      nav.style.setProperty("--preview-index", drag.position);
+      nav.dataset.preview = "";
+      return;
+    }
     const item = nav.querySelector("a:focus-visible") || hoverItem;
     if (item) {
       nav.style.setProperty("--preview-index", links.indexOf(item));
@@ -144,6 +151,93 @@
     nav.style.setProperty("--active-index", links.indexOf(link));
     nav.dataset.active = "";
   }
+
+  // Drag changes only the preview. Follow the nearest native link on release.
+  function previewDrag(clientX) {
+    const centers = drag.centers;
+    const last = centers.length - 1;
+    const x = Math.max(centers[0], Math.min(centers[last], clientX));
+    let left = 0;
+    while (left < last && x > centers[left + 1]) left++;
+    drag.position = left === last ? last : left + (x - centers[left]) / (centers[left + 1] - centers[left]);
+    drag.index = Math.round(drag.position);
+    links.forEach((link, index) => link.toggleAttribute("data-drag-target", index === drag.index));
+    syncPreview();
+  }
+  function finishDrag(commit = false) {
+    if (!drag) return;
+    const gesture = drag;
+    drag = null;
+    nav.removeAttribute("data-pressed");
+    nav.removeAttribute("data-dragging");
+    links.forEach(link => link.removeAttribute("data-drag-target"));
+    if (gesture.moving) ignorePointerClickUntil = performance.now() + 500;
+    resetHover();
+    if (nav.hasPointerCapture(gesture.id)) nav.releasePointerCapture(gesture.id);
+    if (commit && gesture.moving) {
+      const link = links[gesture.index];
+      link.focus({ preventScroll: true });
+      link.click();
+    }
+  }
+  nav.addEventListener("pointerdown", event => {
+    if (!event.isPrimary) { finishDrag(); return; }
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || !links.length) return;
+    finishDrag();
+    ignorePointerClickUntil = 0;
+    resetHover();
+    // Stop an earlier smooth scroll without changing the current viewport.
+    window.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
+    drag = {
+      id: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      moving: false,
+      centers: links.map(link => { const box = link.getBoundingClientRect(); return box.left + box.width / 2; })
+    };
+    nav.dataset.pressed = "";
+  });
+  nav.addEventListener("pointermove", event => {
+    if (!drag || event.pointerId !== drag.id) return;
+    if (!drag.moving) {
+      if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 6) return;
+      drag.moving = true;
+      nav.dataset.dragging = "";
+      nav.setPointerCapture(event.pointerId);
+      setLensHover(true);
+    }
+    previewDrag(event.clientX);
+  });
+  nav.addEventListener("pointerleave", () => {
+    if (drag && !drag.moving) finishDrag();
+  });
+  nav.addEventListener("pointerup", event => {
+    if (!drag || event.pointerId !== drag.id) return;
+    if (drag.moving) previewDrag(event.clientX);
+    finishDrag(true);
+  });
+  nav.addEventListener("pointercancel", () => finishDrag());
+  nav.addEventListener("lostpointercapture", event => {
+    if (event.target === nav && event.pointerId === drag?.id) finishDrag();
+  });
+  nav.addEventListener("dragstart", event => event.preventDefault());
+  nav.addEventListener("contextmenu", event => {
+    if (drag || event.pointerType === "touch") event.preventDefault();
+  });
+  nav.addEventListener("click", event => {
+    // The browser's click after pointerup must not activate the starting link.
+    // Intentional link.click() above and keyboard clicks have detail === 0.
+    if (event.detail > 0 && performance.now() < ignorePointerClickUntil) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+  addEventListener("keydown", event => {
+    if (event.key === "Escape" && drag) { event.preventDefault(); finishDrag(); }
+  });
+  addEventListener("blur", () => finishDrag());
+  addEventListener("resize", () => finishDrag());
+  document.addEventListener("visibilitychange", () => { if (document.hidden) finishDrag(); });
 
   const sections = links.flatMap(link => {
     const url = new URL(link.href);
@@ -174,6 +268,7 @@
   });
   addEventListener("hashchange", () => { selectDestination(location.hash); scheduleUpdate(); });
   function resumeScrollTracking() {
+    if (drag) return;
     destination = null;
     scheduleUpdate();
   }
@@ -189,6 +284,7 @@
   selectDestination(location.hash);
 
   function update() {
+    if (drag) return;
     if (destination) { activate(destination.link); return; }
     const ordered = [...sections].sort((a, b) => a.section.getBoundingClientRect().top - b.section.getBoundingClientRect().top);
     let current = ordered[0];
