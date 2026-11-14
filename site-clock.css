@@ -25,7 +25,10 @@
 .clock-time { display: flex; align-items: baseline; justify-content: center; white-space: nowrap; font-size: 21px; font-weight: 600; line-height: 26px; letter-spacing: -.035em; }
 .clock-main { display: inline-block; flex: none; }
 .clock-colon { max-width: 12px; padding-inline: 2px; overflow: hidden; color: #5c7b9d; font-size: 16px; }
-.clock-seconds { display: inline-block; flex: none; width: 2ch; max-width: 2ch; overflow: hidden; color: #527398; font-size: 16px; font-weight: 500; letter-spacing: 0; }
+.clock-seconds { display: inline-flex; flex: none; width: 2ch; height: 26px; overflow: hidden; color: #486b95; font-size: 18px; font-weight: 500; line-height: 26px; letter-spacing: 0; }
+.clock-digit { position: relative; display: inline-block; flex: 0 0 1ch; width: 1ch; height: 26px; overflow: hidden; }
+.clock-digit-current { display: block; }
+.clock-digit-previous { position: absolute; inset: 0; pointer-events: none; }
 .clock-date { overflow: hidden; white-space: nowrap; text-align: center; color: #536b86; font-size: 11px; line-height: 16px; letter-spacing: .025em; }
 .clock-time, .clock-date { position: relative; z-index: 3; }
 .site-clock.is-floating {
@@ -33,7 +36,7 @@
   z-index: 12;
   top: max(12px, env(safe-area-inset-top, 0px));
   left: max(16px, env(safe-area-inset-left, 0px));
-  width: 96px;
+  width: 128px;
   height: 44px;
   grid-template-rows: 26px 0px;
   gap: 0;
@@ -48,11 +51,8 @@
   touch-action: manipulation;
   transition: width .38s cubic-bezier(.22,1,.36,1), height .38s cubic-bezier(.22,1,.36,1), border-radius .38s, grid-template-rows .38s, gap .38s, box-shadow .3s;
 }
-.site-clock.is-floating:not(.is-expanded) .clock-colon,
-.site-clock.is-floating:not(.is-expanded) .clock-seconds { max-width: 0; padding-inline: 0; opacity: 0; }
 .site-clock.is-floating:not(.is-expanded) .clock-date { opacity: 0; transform: translateY(-3px); }
 .site-clock.is-expanded { width: 148px; height: 62px; grid-template-rows: 26px 16px; gap: 2px; border-radius: 18px; box-shadow: 0 0 0 1px #5e799726, 0 12px 32px -10px #173d6245, inset 0 1px 1px #fff, inset 0 -1px 2px #7f9fc52b; }
-.clock-colon, .clock-seconds { transition: max-width .38s cubic-bezier(.22,1,.36,1), padding .38s, opacity .22s; }
 .clock-date { transition: opacity .22s, transform .3s; }
 .site-clock:focus-visible { outline: 2px solid #36587b; outline-offset: 4px; }
 .site-clock.is-docking { transition: none; }

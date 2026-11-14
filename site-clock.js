@@ -15,12 +15,50 @@
   let hovered = false;
   let dockingAnimation;
   let scrollFrame = 0;
-  const digitAnimations = new WeakMap();
+  const digitAnimations = new Map();
+  const secondDigits = Array.from({ length: 2 }, () => {
+    const digit = document.createElement("span");
+    digit.className = "clock-digit";
+    const current = document.createElement("span");
+    current.className = "clock-digit-current";
+    current.textContent = "-";
+    digit.append(current);
+    return { digit, current };
+  });
+  seconds.replaceChildren(...secondDigits.map(({ digit }) => digit));
 
-  function animateDigits(element) {
-    if (reduceMotion.matches || !element.animate) return;
-    digitAnimations.get(element)?.cancel();
-    digitAnimations.set(element, element.animate([{ opacity: .35, transform: "translateY(3px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 220, easing: "cubic-bezier(.2,.8,.2,1)" }));
+  function stopDigitMotion(digit) {
+    const motion = digitAnimations.get(digit);
+    if (!motion) return;
+    motion.incoming.cancel();
+    motion.outgoing.cancel();
+    motion.previous.remove();
+    digitAnimations.delete(digit);
+  }
+  function updateSeconds(value) {
+    seconds.dataset.value = value;
+    secondDigits.forEach(({ digit, current }, index) => {
+      const next = value[index];
+      const old = current.textContent;
+      if (next === old) return;
+      stopDigitMotion(digit);
+      current.textContent = next;
+      if (old === "-" || reduceMotion.matches || !current.animate) return;
+      // Only changed digits roll. Outgoing copies are visual, never read aloud.
+      const previous = document.createElement("span");
+      previous.className = "clock-digit-previous";
+      previous.textContent = old;
+      previous.setAttribute("aria-hidden", "true");
+      digit.append(previous);
+      const options = { duration: 360, easing: "cubic-bezier(.22,1,.36,1)" };
+      const incoming = current.animate([{ transform: "translateY(100%)", opacity: .3 }, { transform: "translateY(0)", opacity: 1 }], options);
+      const outgoing = previous.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(-100%)", opacity: 0 }], options);
+      const motion = { incoming, outgoing, previous };
+      digitAnimations.set(digit, motion);
+      incoming.addEventListener("finish", () => {
+        if (digitAnimations.get(digit) === motion) stopDigitMotion(digit);
+      }, { once: true });
+    });
   }
   function updateLabel() {
     if (!floating) {
@@ -29,7 +67,7 @@
     }
     const expanded = clock.classList.contains("is-expanded");
     const value = main.textContent + (expanded ? "，" + date.textContent : "");
-    clock.setAttribute("aria-label", "本地时间 " + value + (expanded ? "，点按收起" : "，点按展开日期和秒数"));
+    clock.setAttribute("aria-label", "本地时间 " + value + (expanded ? "，点按收起日期" : "，点按展开日期"));
   }
   function updateExpansion() {
     if (dockingAnimation) return;
@@ -38,7 +76,6 @@
     if (floating) clock.setAttribute("aria-expanded", String(expanded));
     else clock.removeAttribute("aria-expanded");
     date.setAttribute("aria-hidden", String(floating && !expanded));
-    seconds.setAttribute("aria-hidden", String(floating && !expanded));
     updateLabel();
   }
   function stopDocking() {
@@ -90,21 +127,20 @@
 
   function update() {
     clearTimeout(timer);
-    if (document.hidden) return;
+    if (document.hidden) {
+      secondDigits.forEach(({ digit }) => stopDigitMotion(digit));
+      return;
+    }
     const now = new Date();
     const parts = Object.fromEntries(timeFormat.formatToParts(now).map(part => [part.type, part.value]));
     const mainText = `${parts.hour}:${parts.minute}`;
     const dateText = dateFormat.format(now);
-    const minuteChanged = main.textContent !== "--:--" && main.textContent !== mainText;
-    const secondChanged = seconds.textContent !== "--" && seconds.textContent !== parts.second;
     if (main.textContent !== mainText) main.textContent = mainText;
     if (date.textContent !== dateText) date.textContent = dateText;
-    seconds.textContent = parts.second;
+    updateSeconds(parts.second);
     time.dateTime = now.toISOString();
     clock.hidden = false;
     if (slot) slot.hidden = false;
-    if (minuteChanged) animateDigits(main);
-    if (secondChanged && (!floating || clock.classList.contains("is-expanded"))) animateDigits(seconds);
     updateLabel();
     timer = setTimeout(update, 1000 - Date.now() % 1000 + 10);
   }
@@ -113,7 +149,7 @@
   reduceMotion.addEventListener("change", () => {
     if (!reduceMotion.matches) return;
     stopDocking();
-    [main, seconds].forEach(element => element.getAnimations().forEach(animation => animation.cancel()));
+    secondDigits.forEach(({ digit }) => stopDigitMotion(digit));
   });
   clock.addEventListener("pointerenter", event => {
     if (!floating || event.pointerType !== "mouse") return;
