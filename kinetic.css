@@ -1,0 +1,104 @@
+/* The sculpture is an interactive graphic, independent of any project model. */
+.hero.kinetic-hero {
+  display: block;
+  min-height: 700px;
+  padding: 100px 54px 64px;
+  perspective: none;
+  background: radial-gradient(ellipse 60% 90% at 77% 45%, #1d304c, transparent 72%), linear-gradient(115deg, #0a1220, #101c2d);
+  border-color: #304158;
+}
+.kinetic-hero .hero-copy { width: 43%; max-width: 470px; transform: none; pointer-events: none; }
+.kinetic-hero .hero-copy a { pointer-events: auto; }
+.kinetic-hero .hero-identity { color: #a9bdd5; }
+.kinetic-hero .hero-title { margin-top: 32px; font-size: clamp(52px, 5.2vw, 72px); }
+.kinetic-hero .hero-title span + span { text-shadow: 0 2px 20px #9dc7ff16; }
+.kinetic-hero .research { max-width: 26em; }
+.kinetic-hero .hero-cta { margin-top: 32px; }
+.kinetic-hero .hero-flow, .kinetic-hero .spatial-room { display: none; }
+.kinetic-stage { position: absolute; z-index: 1; inset: 0 -4% 0 38%; }
+.kinetic-viewport { position: absolute; inset: 0; overflow: hidden; outline-offset: -12px; touch-action: pan-y pinch-zoom; cursor: grab; -webkit-user-select: none; user-select: none; }
+.kinetic-viewport[data-dragging] { cursor: grabbing; }
+.kinetic-viewport:focus-visible { outline: 1px solid #b9ddff99; border-radius: 24px; }
+.kinetic-canvas, .kinetic-poster { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.kinetic-poster { object-fit: contain; }
+.kinetic-canvas { opacity: 0; transition: opacity .8s; }
+.kinetic-ready .kinetic-canvas { opacity: 1; }
+.kinetic-ready .kinetic-poster { opacity: 0; }
+.kinetic-tag { position: absolute; z-index: 2; top: 34px; right: 8%; display: flex; align-items: center; gap: 8px; color: #8fa8c4; font-size: 10px; letter-spacing: .14em; pointer-events: none; }
+.kinetic-tag::before { width: 5px; height: 5px; border-radius: 50%; background: #acd6ff; box-shadow: 0 0 10px #8ac4ff66; content: ""; }
+.kinetic-tools { position: absolute; z-index: 5; right: 9%; bottom: 32px; display: flex; align-items: center; gap: 8px; }
+.kinetic-hint { margin-right: 8px; color: #a8bdd4; font-size: 11px; letter-spacing: .03em; }
+.kinetic-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 40px; min-width: 40px; padding: 0 12px; border: 1px solid #cee5ff38; border-radius: 999px; color: #d9eaff; background: linear-gradient(125deg, #d4eaff14, #c1deff05); backdrop-filter: blur(16px); box-shadow: inset 0 1px 0 #ffffff21; cursor: pointer; font: 400 11px/1 var(--font-ui); transition: background .2s, border-color .2s; }
+.kinetic-button:hover, .kinetic-button[aria-pressed="true"] { background: #c4e0ff26; border-color: #c4e0ff80; }
+.kinetic-button:focus-visible { outline: 2px solid #c9e5ff; outline-offset: 4px; }
+.kinetic-button:disabled { opacity: .5; cursor: default; }
+.kinetic-button svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.kinetic-button[data-action="pause"] { padding: 0; }
+.kinetic-button .play-icon, .kinetic-button[aria-pressed="true"] .pause-icon { display: none; }
+.kinetic-button[aria-pressed="true"] .play-icon { display: block; }
+.kinetic-hero > [data-image-gallery] {
+  position: relative;
+  z-index: 4;
+  width: 350px;
+  max-width: 43%;
+  margin-top: 44px;
+  transform: none;
+  transform-style: flat;
+}
+.kinetic-hero > [data-image-gallery]::after { display: none; }
+.kinetic-hero .hero-proof, .kinetic-hero .hero-proof:is(:hover, :focus-visible) {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 5px 14px;
+  padding: 13px 15px;
+  border: 1px solid #bcdcff38;
+  border-radius: 16px;
+  transform-style: flat;
+  background: linear-gradient(120deg, #bad7fa0f, #bad7fa04);
+  box-shadow: inset 0 1px 0 #ffffff1a, 0 12px 24px #0002;
+  transition: border-color .25s, background .25s;
+}
+.kinetic-hero .hero-proof:is(:hover, :focus-visible) { border-color: #c9e5ff85; background: #bad7fa16; }
+.kinetic-hero .hero-proof::before, .kinetic-hero .hero-proof::after { display: none; }
+.kinetic-hero .proof-header { grid-column: 2; align-self: end; transform: none; color: #9fb7d2; font-size: 10px; }
+.kinetic-hero .proof-number { display: none; }
+.kinetic-hero .proof-caption { grid-column: 2; display: flex; flex-wrap: wrap; gap: 4px 12px; align-self: start; padding: 0; border: 0; transform: none; font-size: 13px; line-height: 22px; }
+.kinetic-hero .proof-note { font-size: 10px; white-space: nowrap; }
+.kinetic-hero .proof-art { grid-column: 1; grid-row: 1 / 3; width: 72px; height: 60px; margin: 0; transform-style: flat; }
+.kinetic-hero .proof-art img { height: 55px; width: 46px; padding: 2px; border-radius: 3px; box-shadow: 0 3px 8px #0005; }
+.kinetic-hero .proof-art img:first-child,
+.kinetic-hero .hero-proof:is(:hover, :focus-visible) .proof-art img:first-child { transform: rotate(-9deg); }
+.kinetic-hero .proof-art img:last-child,
+.kinetic-hero .hero-proof:is(:hover, :focus-visible) .proof-art img:last-child { transform: rotate(9deg); }
+@media (max-width: 1100px) and (min-width: 761px) {
+  .hero.kinetic-hero { min-height: 660px; padding: 80px 36px 54px; }
+  .kinetic-hero .hero-copy { width: 47%; }
+  .kinetic-hero .hero-title { font-size: 54px; }
+  .kinetic-stage { left: 37%; right: -10%; }
+  .kinetic-hint { display: none; }
+  .kinetic-tools { right: 16%; }
+  .kinetic-tag { right: 16%; }
+  .kinetic-hero > [data-image-gallery] { max-width: 46%; }
+}
+@media (max-width: 760px) {
+  .hero.kinetic-hero { min-height: 0; padding: 36px 28px 30px; }
+  .kinetic-hero .hero-copy { width: 100%; max-width: 480px; }
+  .kinetic-hero .hero-title { margin-top: 24px; font-size: clamp(42px, 7.6vw, 62px); }
+  .kinetic-hero .research { max-width: 32em; }
+  .kinetic-hero .hero-cta { margin-top: 24px; }
+  .kinetic-stage { position: relative; inset: auto; height: 410px; margin: -22px -26px 0; }
+  .kinetic-tag { top: 28px; right: 18px; }
+  .kinetic-tools { left: 0; right: 0; bottom: 2px; justify-content: center; }
+  .kinetic-hint { font-size: 10px; margin-right: 2px; }
+  .kinetic-hero > [data-image-gallery] { width: 100%; max-width: 100%; margin: 24px 0 0; }
+  .kinetic-hero .proof-caption { justify-content: space-between; }
+}
+@media (max-width: 400px) {
+  .hero.kinetic-hero { padding-inline: 24px; }
+  .kinetic-stage { height: 345px; margin-inline: -22px; }
+  .kinetic-hint { display: none; }
+  .kinetic-hero .hero-proof { padding: 12px; gap: 4px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kinetic-canvas, .kinetic-button { transition: none; }
+}

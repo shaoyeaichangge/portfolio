@@ -397,6 +397,7 @@ main { margin-block: 24px 32px; }
 <link rel="stylesheet" href="./studio.css?v=1">
 <link rel="stylesheet" href="./skill-models.css?v=1">
 <link rel="stylesheet" href="./spatial.css?v=1">
+<link rel="stylesheet" href="./kinetic.css?v=1">
 </head>
 <body id="top">
 <a class="skip" href="#main">跳到主要内容</a>
@@ -413,13 +414,26 @@ main { margin-block: 24px 32px; }
 <div class="nav-links"><a href="#works">作品集</a><a href="#simulation">仿真</a><a href="#skills">技能</a><a href="#xiaohongshu">内容创作</a></div>
 </nav></header>
 <main id="main" tabindex="-1">
-<section class="hero spatial-hero" aria-labelledby="hero-title">
+<section class="hero spatial-hero kinetic-hero" aria-labelledby="hero-title">
   <canvas class="hero-flow" aria-hidden="true"></canvas>
   <div class="hero-copy">
     <p class="hero-identity">机械工程硕士在读</p>
     <h1 id="hero-title" class="hero-title"><span class="hero-greeting">Hello,</span> <span>我是张同学</span></h1>
     <p class="research">我主要做计算流体动力学（CFD）和流固相互作用（FSI）相关的仿真。</p>
     <a class="hero-cta" href="#works">往下看看我的作品 <span aria-hidden="true">↓</span></a>
+  </div>
+  <div class="kinetic-stage" role="group" aria-label="三维交互装置">
+    <div class="kinetic-viewport" role="group" aria-label="三维曲面装置，可拖动或用方向键旋转，Home 键复位" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown Home">
+      <img class="kinetic-poster" src="./assets/kinetic-study.webp" width="1000" height="1000" alt="" aria-hidden="true">
+      <canvas class="kinetic-canvas" aria-hidden="true"></canvas>
+    </div>
+    <span class="kinetic-tag">交互装置</span>
+    <div class="kinetic-tools" hidden>
+      <span class="kinetic-hint">拖动旋转</span>
+      <button class="kinetic-button" type="button" data-action="expand" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m3 6 7-3 7 3-7 3-7-3Zm0 4 7 3 7-3M3 14l7 3 7-3"/></svg><span>展开结构</span></button>
+      <button class="kinetic-button" type="button" data-action="pause" aria-pressed="false" aria-label="暂停自动转动"><svg class="pause-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10M13 5v10"/></svg><svg class="play-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 9 6-9 6V4Z"/></svg></button>
+      <button class="kinetic-button" type="button" data-action="reset" aria-label="恢复初始视角"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a7 7 0 1 1 0 6M4 3v4h4"/></svg></button>
+    </div>
   </div>
   <div data-image-gallery>
     <a class="hero-proof" href="./assets/research-workflow-redacted.png"
@@ -550,8 +564,9 @@ main { margin-block: 24px 32px; }
 <script src="./image-viewer.js?v=morph-3"></script>
 <script src="./bottom-nav.js?v=bubble-10"></script>
 <script src="./site-clock.js?v=seconds-3"></script>
-<script src="./studio.js?v=spatial-3"></script>
+<script src="./studio.js?v=kinetic-4"></script>
 <script src="./skill-models.js?v=1"></script>
-<script src="./spatial.js?v=1"></script>
+<script src="./spatial.js?v=2"></script>
+<script src="./kinetic-scene.js?v=1"></script>
 </body>
 </html>

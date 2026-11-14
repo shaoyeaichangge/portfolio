@@ -75,6 +75,7 @@
   }
 
   // Analytic decorative streamlines, cached as paths. No models or project data.
+  if (hero.classList.contains("kinetic-hero")) return;
   const canvas = document.querySelector(".hero-flow");
   const context = canvas?.getContext("2d");
   if (!context) return;

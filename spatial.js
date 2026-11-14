@@ -9,7 +9,7 @@
   room.className = "spatial-room";
   room.setAttribute("aria-hidden", "true");
   room.innerHTML = '<div class="spatial-floor"></div><div class="spatial-wall"></div>';
-  hero.prepend(room);
+  if (!hero.classList.contains("kinetic-hero")) hero.prepend(room);
   hero.classList.add("spatial-hero");
 
   const records = new Map();
@@ -110,7 +110,7 @@
     }, { passive: true });
     record.clearBounds = () => { box = undefined; };
   }
-  attach(scene);
+  if (!hero.classList.contains("kinetic-hero")) attach(scene);
 
   const cardObserver = new IntersectionObserver(entries => {
     entries.forEach(({ target, isIntersecting }) => {
@@ -142,7 +142,7 @@
     const box = hero.getBoundingClientRect();
     heroTop = box.top + scrollY;
     heroHeight = box.height;
-    scene.clearBounds();
+    scene.clearBounds?.();
     records.forEach(record => record.clearBounds());
     scrollPending = true;
     schedule();
@@ -154,7 +154,7 @@
     if (scene.visible) { scrollPending = true; schedule(); }
   }).observe(hero);
   window.addEventListener("scroll", () => {
-    scene.clearBounds();
+    scene.clearBounds?.();
     records.forEach(record => {
       record.clearBounds();
       if (!frozen && record.tl) neutral(record);
