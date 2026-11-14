@@ -1,10 +1,15 @@
 .header-identity { display: flex; align-items: center; gap: 18px; min-width: 0; }
 .nav:has(.header-identity) { padding-block: 8px; }
+.clock-slot { flex: none; width: 148px; height: 62px; }
 .site-clock {
   position: relative;
   display: grid;
   gap: 2px;
-  min-width: 148px;
+  grid-template-rows: 26px 16px;
+  align-content: start;
+  width: 100%;
+  height: 62px;
+  min-width: 0;
   padding: 8px 14px;
   overflow: hidden;
   border: 1px solid #ffffffe6;
@@ -17,16 +22,50 @@
   font-variant-numeric: tabular-nums;
 }
 .site-clock[hidden] { display: none; }
-.clock-time { display: flex; align-items: baseline; white-space: nowrap; font-size: 21px; font-weight: 600; line-height: 26px; letter-spacing: -.035em; }
-.clock-colon { padding-inline: 2px; color: #5c7b9d; font-size: 16px; }
-.clock-seconds { display: inline-block; min-width: 2ch; color: #527398; font-size: 16px; font-weight: 500; letter-spacing: 0; }
-.clock-date { color: #536b86; font-size: 11px; line-height: 16px; letter-spacing: .025em; }
+.clock-time { display: flex; align-items: baseline; justify-content: center; white-space: nowrap; font-size: 21px; font-weight: 600; line-height: 26px; letter-spacing: -.035em; }
+.clock-main { display: inline-block; flex: none; }
+.clock-colon { max-width: 12px; padding-inline: 2px; overflow: hidden; color: #5c7b9d; font-size: 16px; }
+.clock-seconds { display: inline-block; flex: none; width: 2ch; max-width: 2ch; overflow: hidden; color: #527398; font-size: 16px; font-weight: 500; letter-spacing: 0; }
+.clock-date { overflow: hidden; white-space: nowrap; text-align: center; color: #536b86; font-size: 11px; line-height: 16px; letter-spacing: .025em; }
+.clock-time, .clock-date { position: relative; z-index: 3; }
+.site-clock.is-floating {
+  position: fixed;
+  z-index: 12;
+  top: max(12px, env(safe-area-inset-top, 0px));
+  left: max(16px, env(safe-area-inset-left, 0px));
+  width: 96px;
+  height: 44px;
+  grid-template-rows: 26px 0px;
+  gap: 0;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 15% 0%, #ffffffe6, transparent 80%), linear-gradient(135deg, #f6fbffc9, #dce9f3b8);
+  box-shadow: 0 0 0 1px #5e79972b, 0 8px 24px -8px #173d623b, inset 0 1px 1px #fff, inset 0 -1px 2px #7f9fc52b;
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: width .38s cubic-bezier(.22,1,.36,1), height .38s cubic-bezier(.22,1,.36,1), border-radius .38s, grid-template-rows .38s, gap .38s, box-shadow .3s;
+}
+.site-clock.is-floating:not(.is-expanded) .clock-colon,
+.site-clock.is-floating:not(.is-expanded) .clock-seconds { max-width: 0; padding-inline: 0; opacity: 0; }
+.site-clock.is-floating:not(.is-expanded) .clock-date { opacity: 0; transform: translateY(-3px); }
+.site-clock.is-expanded { width: 148px; height: 62px; grid-template-rows: 26px 16px; gap: 2px; border-radius: 18px; box-shadow: 0 0 0 1px #5e799726, 0 12px 32px -10px #173d6245, inset 0 1px 1px #fff, inset 0 -1px 2px #7f9fc52b; }
+.clock-colon, .clock-seconds { transition: max-width .38s cubic-bezier(.22,1,.36,1), padding .38s, opacity .22s; }
+.clock-date { transition: opacity .22s, transform .3s; }
+.site-clock:focus-visible { outline: 2px solid #36587b; outline-offset: 4px; }
+.site-clock.is-docking { transition: none; }
+#works, #simulation, #skills, #about, #xiaohongshu, .skills-section .skill-row { scroll-margin-top: 84px; }
 @media (max-width: 760px) {
-  .nav:has(.site-clock:not([hidden])) { flex-wrap: wrap; gap: 10px; padding-block: 10px; }
-  .nav:has(.site-clock:not([hidden])) .header-identity { width: 100%; justify-content: space-between; }
-  .nav:has(.site-clock:not([hidden])) .nav-links { width: 100%; justify-content: center; }
-  .site-clock { min-width: 140px; }
+  .nav:has(.clock-slot:not([hidden])) { flex-wrap: wrap; gap: 12px; padding-block: 12px; }
+  .nav:has(.clock-slot:not([hidden])) .header-identity { width: 100%; justify-content: space-between; }
+  .nav:has(.clock-slot:not([hidden])) .nav-links { width: 100%; justify-content: center; }
+  .clock-slot { width: 140px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-clock, .clock-colon, .clock-seconds, .clock-date { transition: none !important; }
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  .site-clock { background: #edf4ff; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .clock-slot .site-clock, .site-clock.is-floating { background: #edf4ff; backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
