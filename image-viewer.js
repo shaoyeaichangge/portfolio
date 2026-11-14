@@ -50,6 +50,110 @@
   let pressedBackdrop = false;
   let touchStart;
   let swipeTime = -Infinity;
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  let originGallery;
+  let originSource;
+  let morph;
+  let closing = false;
+
+  function visibleArea(element) {
+    const rect = element.getBoundingClientRect();
+    const track = element.closest(".project-thumbnails")?.getBoundingClientRect();
+    return Math.max(0, Math.min(rect.right, innerWidth, track?.right ?? innerWidth) - Math.max(rect.left, 0, track?.left ?? 0))
+      * Math.max(0, Math.min(rect.bottom, innerHeight, track?.bottom ?? innerHeight) - Math.max(rect.top, 0, track?.top ?? 0));
+  }
+  function sourceFor(link) {
+    const proof = originGallery?.querySelector(".proof-art");
+    if (proof) {
+      const candidate = proof.querySelectorAll("img")[currentIndex];
+      if (candidate && visibleArea(candidate)) return candidate;
+    }
+    const candidates = originGallery
+      ? [...originGallery.querySelectorAll("a[href] img")].filter(img => img.closest("a").href === link.href)
+      : [...(link.closest("figure")?.querySelectorAll("img") || link.querySelectorAll("img"))];
+    return candidates.filter(img => img.complete && img.naturalWidth && visibleArea(img)).sort((a, b) => visibleArea(b) - visibleArea(a))[0];
+  }
+  function paintBox(element) {
+    const rect = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    const width = element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const height = element.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    const scale = Math.min(width / element.naturalWidth, height / element.naturalHeight);
+    const w = element.naturalWidth * scale, h = element.naturalHeight * scale;
+    let angle = 0;
+    if (style.transform !== "none" && typeof DOMMatrixReadOnly !== "undefined") {
+      const matrix = new DOMMatrixReadOnly(style.transform);
+      angle = Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+    }
+    return { left: rect.left + (rect.width - w) / 2, top: rect.top + (rect.height - h) / 2, width: w, height: h, angle };
+  }
+  function fittedTarget(source) {
+    const rect = zoomButton.getBoundingClientRect();
+    const scale = Math.min(rect.width / source.naturalWidth, rect.height / source.naturalHeight);
+    const width = source.naturalWidth * scale, height = source.naturalHeight * scale;
+    return { left: rect.left + (rect.width - width) / 2, top: rect.top + (rect.height - height) / 2, width, height, angle: 0 };
+  }
+  function boxStyles(box) {
+    return { left: box.left + "px", top: box.top + "px", width: box.width + "px", height: box.height + "px", transform: `rotate(${box.angle || 0}deg)` };
+  }
+  function cancelMorph() {
+    if (morph) {
+      morph.animation?.cancel();
+      morph.clone.remove();
+      morph.source.style.visibility = morph.sourceVisibility;
+      image.style.visibility = morph.imageVisibility;
+      morph = undefined;
+    }
+    for (const key of ["opening", "closing", "morphing"]) delete viewer.dataset[key];
+  }
+  function finishOpening() {
+    if (!morph?.finished || closing || image.hidden || !image.complete || !image.naturalWidth) return;
+    cancelMorph();
+  }
+  function animateImage(source, from, to, isClosing, src) {
+    const clone = document.createElement("img");
+    clone.className = "image-viewer-transition";
+    clone.alt = "";
+    clone.setAttribute("aria-hidden", "true");
+    clone.src = src || (isClosing ? (image.currentSrc || source.currentSrc) : source.currentSrc);
+    Object.assign(clone.style, boxStyles(to));
+    const state = { clone, source, sourceVisibility: source.style.visibility, imageVisibility: image.style.visibility };
+    morph = state;
+    source.style.visibility = image.style.visibility = "hidden";
+    viewer.dataset.morphing = "";
+    viewer.dataset[isClosing ? "closing" : "opening"] = "";
+    viewer.append(clone);
+    state.animation = clone.animate([
+      { ...boxStyles(from), borderRadius: isClosing ? "0px" : "6px" },
+      { ...boxStyles(to), borderRadius: isClosing ? "6px" : "0px" }
+    ], { duration: isClosing ? 320 : 440, easing: "cubic-bezier(.22,1,.36,1)" });
+    state.animation.addEventListener("finish", () => {
+      if (morph !== state) return;
+      state.finished = true;
+      if (isClosing) viewer.close();
+      else { delete viewer.dataset.opening; finishOpening(); }
+    }, { once: true });
+  }
+  function openFrom(source) {
+    if (reduceMotion.matches || !source || !source.naturalWidth || !image.animate) return;
+    animateImage(source, paintBox(source), fittedTarget(source), false);
+  }
+  function requestClose() {
+    if (closing) { viewer.close(); return; }
+    const source = sourceFor(slides[currentIndex]) || (originSource?.isConnected && visibleArea(originSource) ? originSource : null);
+    if (reduceMotion.matches || !source || !source.naturalWidth || (!morph && image.hidden)) { viewer.close(); return; }
+    const visual = morph?.clone || image;
+    const src = visual.currentSrc || visual.src;
+    const rect = visual.getBoundingClientRect();
+    const from = { left: rect.left, top: rect.top, width: rect.width, height: rect.height, angle: 0 };
+    const target = paintBox(source);
+    const backdrop = getComputedStyle(viewer, "::backdrop");
+    viewer.style.setProperty("--veil-from", backdrop.backgroundColor);
+    viewer.style.setProperty("--veil-blur-from", backdrop.backdropFilter || "blur(8px)");
+    cancelMorph();
+    closing = true;
+    animateImage(source, from, target, true, src);
+  }
 
   function setZoom(zoomed) {
     viewer.classList.toggle("image-viewer-zoomed", zoomed);
@@ -59,6 +163,7 @@
   }
 
   function showImage() {
+    cancelMorph();
     const link = slides[currentIndex];
     const figure = link.closest("figure");
     title.textContent = link.dataset.imageTitle
@@ -83,12 +188,15 @@
   }
 
   function showLoadedImage() {
+    if (!image.complete || !image.naturalWidth) return;
     image.hidden = false;
     zoomButton.disabled = false;
     hint.hidden = false;
+    finishOpening();
   }
 
   function stepBy(amount) {
+    if (closing) return;
     const index = currentIndex + amount;
     if (index < 0 || index >= slides.length) return;
     const focused = document.activeElement;
@@ -102,6 +210,7 @@
   next.addEventListener("click", () => stepBy(1));
   zoomButton.addEventListener("click", event => {
     if (event.detail && (event.target !== image || performance.now() - swipeTime < 350)) return;
+    cancelMorph();
     zoomButton.style.setProperty("--zoom-width", image.naturalWidth + "px");
     setZoom(!viewer.classList.contains("image-viewer-zoomed"));
   });
@@ -130,6 +239,8 @@
   image.addEventListener("load", showLoadedImage);
   image.addEventListener("error", () => {
     if (!viewer.open) return;
+    if (closing) { viewer.close(); return; }
+    cancelMorph();
     zoomButton.hidden = true;
     hint.hidden = true;
     error.hidden = false;
@@ -150,7 +261,7 @@
     touchStart = undefined;
   });
   viewer.addEventListener("click", event => {
-    if (pressedBackdrop && isBackdrop(event)) viewer.close();
+    if (pressedBackdrop && isBackdrop(event)) requestClose();
     pressedBackdrop = false;
   });
 
@@ -164,6 +275,7 @@
     event.preventDefault();
     opener = link.hasAttribute("data-image-copy") ? link.parentElement : link;
     const gallery = link.closest("[data-image-gallery]");
+    originGallery = gallery;
     slides = [...(gallery?.querySelectorAll("a[data-image-item]") || [])];
     currentIndex = slides.findIndex(slide => slide.href === link.href);
     if (currentIndex < 0) {
@@ -172,14 +284,24 @@
     }
     showImage();
     viewer.showModal();
+    originSource = sourceFor(link);
+    openFrom(originSource);
   });
 
+  viewer.querySelector("form").addEventListener("submit", event => { event.preventDefault(); requestClose(); });
+  viewer.addEventListener("cancel", event => { event.preventDefault(); requestClose(); });
+  addEventListener("resize", () => { if (closing) viewer.close(); else cancelMorph(); });
+  reduceMotion.addEventListener("change", () => { if (reduceMotion.matches) { if (closing) viewer.close(); else cancelMorph(); } });
+
   viewer.addEventListener("close", () => {
+    cancelMorph();
+    closing = false;
     pressedBackdrop = false;
     touchStart = undefined;
     image.removeAttribute("src");
     opener?.focus({ preventScroll: true });
     opener = undefined;
     slides = [];
+    originGallery = originSource = undefined;
   });
 })();

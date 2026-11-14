@@ -83,13 +83,14 @@
   let ignorePointerClickUntil = 0;
   let elastic = null;
   let elasticFrame = 0;
+  let committingGesture = false;
 
   function stopElastic() {
     cancelAnimationFrame(elasticFrame);
     elasticFrame = 0;
     elastic = null;
     nav.removeAttribute("data-elastic");
-    for (const key of ["--lens-position", "--lens-stretch", "--lens-compress", "--lens-origin", "--lens-energy"]) nav.style.removeProperty(key);
+    for (const key of ["--lens-position", "--lens-stretch", "--lens-compress", "--lens-origin", "--lens-energy", "--lens-bubble-scale"]) nav.style.removeProperty(key);
   }
   function writeElastic() {
     const position = Math.max(0, Math.min(links.length - 1, elastic.position));
@@ -97,12 +98,30 @@
     nav.style.setProperty("--lens-position", position.toFixed(4));
     nav.style.setProperty("--lens-stretch", stretch.toFixed(4));
     nav.style.setProperty("--lens-compress", (1 - (stretch - 1) * .32).toFixed(4));
-    nav.style.setProperty("--lens-origin", `${position / Math.max(1, links.length - 1) * 100}%`);
+    nav.style.setProperty("--lens-origin", elastic.flight ? "50%" : `${position / Math.max(1, links.length - 1) * 100}%`);
+    nav.style.setProperty("--lens-bubble-scale", (elastic.scale ?? 1).toFixed(4));
     nav.style.setProperty("--lens-energy", Math.min(1, Math.abs(stretch - 1) / .22).toFixed(3));
   }
   function animateElastic(now) {
     elasticFrame = 0;
     if (!elastic || reduceMotion.matches || document.hidden) { stopElastic(); return; }
+    if (elastic.flight) {
+      const flight = elastic.flight;
+      const t = Math.min(1, (now - flight.start) / 440);
+      const travel = Math.max(0, Math.min(1, (t - .1) / .66));
+      const eased = travel * travel * (3 - 2 * travel);
+      elastic.position = flight.from + (elastic.target - flight.from) * eased;
+      const stops = [[0, flight.scale], [.18, .7], [.55, .64], [.84, 1.065], [1, 1]];
+      const right = stops.findIndex(stop => stop[0] >= t);
+      const [at, scale] = stops[Math.max(0, right - 1)];
+      const [nextAt, nextScale] = stops[Math.max(0, right)];
+      const progress = nextAt === at ? 1 : (t - at) / (nextAt - at);
+      elastic.scale = scale + (nextScale - scale) * (progress * progress * (3 - 2 * progress));
+      writeElastic();
+      if (t >= 1) { stopElastic(); return; }
+      elasticFrame = requestAnimationFrame(animateElastic);
+      return;
+    }
     const dt = Math.min((now - elastic.time) / 1000, 1 / 30);
     elastic.time = now;
     const held = drag?.moving;
@@ -143,6 +162,22 @@
     elastic.target = target;
     elastic.velocity = Math.max(-1.5, Math.min(1.5, velocity * .16));
     if (!elasticFrame) elasticFrame = requestAnimationFrame(animateElastic);
+  }
+  function previewIndex() {
+    return Number(nav.style.getPropertyValue("--preview-index") || nav.style.getPropertyValue("--active-index")) || 0;
+  }
+  function flySelection(from) {
+    if (committingGesture || drag || nav.hasAttribute("data-pressed") || reduceMotion.matches || document.hidden) return;
+    const target = previewIndex();
+    if (elastic?.target === target) return;
+    const position = elastic?.position ?? from;
+    const scale = elastic?.scale ?? 1;
+    if (Math.abs(position - target) < .001 && Math.abs(scale - 1) < .001) { stopElastic(); return; }
+    stopElastic();
+    elastic = { position, target, velocity: 0, stretch: 1, stretchVelocity: 0, scale, time: performance.now(), flight: { from: position, scale, start: performance.now() } };
+    nav.dataset.elastic = "";
+    writeElastic();
+    elasticFrame = requestAnimationFrame(animateElastic);
   }
   function clearItemLight() {
     if (!hoverItem) return;
@@ -191,6 +226,7 @@
       nav.dataset.preview = "";
       return;
     }
+    const from = previewIndex();
     const item = nav.querySelector("a:focus-visible") || hoverItem;
     if (item) {
       nav.style.setProperty("--preview-index", links.indexOf(item));
@@ -199,6 +235,7 @@
       nav.style.removeProperty("--preview-index");
       nav.removeAttribute("data-preview");
     }
+    flySelection(from);
   }
   nav.addEventListener("focusin", syncPreview);
   nav.addEventListener("focusout", () => queueMicrotask(syncPreview));
@@ -206,6 +243,8 @@
 
   function activate(link, current = "location") {
     if (!link || link === activeLink) return;
+    const from = previewIndex();
+    const initial = !activeLink;
     for (const other of links) {
       if (other !== link) other.removeAttribute("aria-current");
     }
@@ -213,6 +252,7 @@
     link.setAttribute("aria-current", current);
     nav.style.setProperty("--active-index", links.indexOf(link));
     nav.dataset.active = "";
+    if (!initial) flySelection(from);
   }
 
   // Drag changes only the preview. Follow the nearest native link on release.
@@ -247,6 +287,7 @@
     links.forEach(link => link.removeAttribute("data-drag-target"));
     if (gesture.moving) ignorePointerClickUntil = performance.now() + 500;
     if (gesture.moving) settleElastic(commit ? gesture.index : Number(nav.style.getPropertyValue("--active-index")) || 0, commit ? gesture.velocity : 0);
+    committingGesture = true;
     resetHover();
     if (nav.hasPointerCapture(gesture.id)) nav.releasePointerCapture(gesture.id);
     if (commit && gesture.moving) {
@@ -254,6 +295,7 @@
       link.focus({ preventScroll: true });
       link.click();
     }
+    committingGesture = false;
   }
   nav.addEventListener("pointerdown", event => {
     if (!event.isPrimary) { finishDrag(); return; }
@@ -261,6 +303,7 @@
     finishDrag();
     stopElastic();
     ignorePointerClickUntil = 0;
+    nav.dataset.pressed = "";
     resetHover();
     // Stop an earlier smooth scroll without changing the current viewport.
     window.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });

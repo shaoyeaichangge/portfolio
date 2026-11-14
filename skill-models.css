@@ -1,0 +1,58 @@
+.skills-section .skill-icon.skill-model { position: relative; width: 76px; height: 76px; overflow: visible; border: 0; background: none; box-shadow: none; perspective: 420px; }
+.skills-section .skill-row:is(:hover, :focus-within) .skill-model { transform: none; background: none; box-shadow: none; }
+.model-platform { position: absolute; inset: auto 4px 3px; height: 20px; border: 1px solid #a9cfff26; border-radius: 50%; background: radial-gradient(ellipse, #9dcaff1a, #75b9ff05 70%); box-shadow: 0 7px 14px -6px #0006; }
+.model-scene { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .65s cubic-bezier(.22,1,.36,1); }
+.model-cube { transform: rotateX(-18deg) rotateY(-28deg) rotateZ(-4deg); }
+.model-face { position: absolute; left: 19px; top: 17px; width: 38px; height: 38px; border: 1px solid #cce8ff94; border-radius: 3px; background: linear-gradient(135deg, #def0ff2e, #a3cfff0a); box-shadow: inset 0 1px 0 #fff5; backface-visibility: visible; }
+.model-front { transform: translateZ(19px); }
+.model-right { transform: rotateY(90deg) translateZ(19px); background: linear-gradient(145deg, #a4cfff24, #b1d4ff09); }
+.model-top { transform: rotateX(90deg) translateZ(19px); background: linear-gradient(140deg, #e2f2ff40, #c0dfff12); }
+.model-flow-plane { position: absolute; left: 6px; top: 19px; width: 64px; height: 40px; transform: translateZ(6px); }
+.skills-section .skill-model svg { display: block; width: 100%; height: 100%; fill: none; stroke: #c4e5ff; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+.model-flow-plane path { stroke-dasharray: 14 5; animation: model-current 2s linear infinite paused; }
+@keyframes model-current { to { stroke-dashoffset: -38; } }
+.model-sheets { transform: rotateX(52deg) rotateZ(-32deg) translateY(-2px); }
+.model-sheet { position: absolute; left: 15px; top: 19px; width: 46px; height: 34px; border: 1px solid #c9e5ff94; border-radius: 4px; background: linear-gradient(130deg, #c9e4ff2b, #b8d7ff10); box-shadow: inset 0 1px 0 #fff5, 0 4px 8px #0002; transition: transform .65s cubic-bezier(.22,1,.36,1); }
+.sheet-bottom { transform: translateZ(-10px); opacity: .6; }
+.sheet-middle { transform: translateZ(0); opacity: .8; }
+.sheet-top { transform: translateZ(10px); background: linear-gradient(130deg, #cee6ff52, #a6cfff1c); }
+.model-computer { transform: rotateX(-8deg) rotateY(-22deg) rotateZ(-3deg); }
+.model-monitor { position: absolute; left: 8px; top: 13px; width: 48px; height: 35px; padding: 3px; border: 1px solid #d0e8ffb3; border-radius: 5px; background: linear-gradient(145deg, #d4e4f782, #748aa838); box-shadow: 2px 3px 0 #7090b72b, inset 0 1px 0 #fff9; transform: translateZ(5px); }
+.model-screen { display: block; height: 100%; overflow: hidden; border: 1px solid #0d243980; border-radius: 2px; background: #11253b; }
+.skills-section .model-screen svg { stroke: #b7ddff; }
+.model-grid { opacity: .13; stroke-width: .5; }
+.model-stand { position: absolute; left: 29px; top: 46px; width: 7px; height: 12px; border: 1px solid #c6e0fa8c; background: linear-gradient(90deg, #b7d3f06e, #6481a038); transform: translateZ(2px); }
+.model-foot { position: absolute; left: 18px; top: 58px; width: 30px; height: 5px; border: 1px solid #c6e0fa8c; border-radius: 4px; background: #b7d3f038; transform: rotateX(40deg) translateZ(3px); }
+.model-chip { position: absolute; left: 49px; top: 41px; display: grid; place-items: center; width: 22px; height: 22px; border: 3px solid transparent; border-radius: 3px; background: repeating-linear-gradient(90deg, #bcdcff80 0 1px, transparent 1px 4px); transform: translateZ(10px) rotateZ(8deg); transition: transform .65s cubic-bezier(.22,1,.36,1); }
+.model-chip > span { width: 17px; height: 17px; border: 1px solid #d6ebffb3; border-radius: 2px; background: linear-gradient(140deg, #728ca9, #203c5b); box-shadow: inset 0 0 0 3px #a9cfff26, 0 2px 4px #0004; }
+.skills-section .skill-row[data-model-active] .model-cube { transform: rotateX(-12deg) rotateY(8deg) rotateZ(-3deg) translateY(-3px); }
+.skills-section .skill-row[data-model-active] .model-flow-plane path { animation-play-state: running; }
+.skills-section .skill-row[data-model-active] .model-sheets { transform: rotateX(45deg) rotateZ(-24deg) translateY(-3px); }
+.skills-section .skill-row[data-model-active] .sheet-top { transform: translateZ(23px); }
+.skills-section .skill-row[data-model-active] .sheet-bottom { transform: translateZ(-19px); }
+.skills-section .skill-row[data-model-active] .model-computer { transform: rotateX(-5deg) rotateY(1deg) translateY(-2px); }
+.skills-section .skill-row[data-model-active] .model-chip { transform: translateZ(22px) rotateZ(-5deg); }
+@media (hover: hover) and (pointer: fine) {
+  .skill-row:hover .model-cube { transform: rotateX(-12deg) rotateY(8deg) rotateZ(-3deg) translateY(-3px); }
+  .skill-row:hover .model-flow-plane path { animation-play-state: running; }
+  .skill-row:hover .model-sheets { transform: rotateX(45deg) rotateZ(-24deg) translateY(-3px); }
+  .skill-row:hover .sheet-top { transform: translateZ(23px); }
+  .skill-row:hover .sheet-bottom { transform: translateZ(-19px); }
+  .skill-row:hover .model-computer { transform: rotateX(-5deg) rotateY(1deg) translateY(-2px); }
+  .skill-row:hover .model-chip { transform: translateZ(22px) rotateZ(-5deg); }
+}
+@media (max-width: 600px) {
+  .skills-section .skill-icon.skill-model { width: 60px; height: 60px; }
+  .model-scene { width: 76px; height: 76px; inset: -8px; scale: .79; }
+  .model-platform { inset-inline: 0; bottom: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .model-scene, .model-sheet, .model-chip { transition: none !important; }
+  .model-flow-plane path { animation: none !important; }
+  .skills-section .skill-row:is(:hover, [data-model-active]) .model-cube { transform: rotateX(-18deg) rotateY(-28deg) rotateZ(-4deg); }
+  .skills-section .skill-row:is(:hover, [data-model-active]) .model-sheets { transform: rotateX(52deg) rotateZ(-32deg) translateY(-2px); }
+  .skills-section .skill-row:is(:hover, [data-model-active]) .sheet-top { transform: translateZ(10px); }
+  .skills-section .skill-row:is(:hover, [data-model-active]) .sheet-bottom { transform: translateZ(-10px); }
+  .skills-section .skill-row:is(:hover, [data-model-active]) .model-computer { transform: rotateX(-8deg) rotateY(-22deg) rotateZ(-3deg); }
+  .skills-section .skill-row:is(:hover, [data-model-active]) .model-chip { transform: translateZ(10px) rotateZ(8deg); }
+}
