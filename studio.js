@@ -51,30 +51,6 @@
     reduceMotion.addEventListener("change", reset);
   });
 
-  let tiltFrame = 0;
-  let tiltPoint;
-  function resetTilt() {
-    cancelAnimationFrame(tiltFrame);
-    tiltFrame = 0;
-    proof.style.removeProperty("--tilt-x");
-    proof.style.removeProperty("--tilt-y");
-  }
-  proof.addEventListener("pointermove", event => {
-    if (!finePointer.matches || reduceMotion.matches || innerWidth <= 760 || event.pointerType !== "mouse") return;
-    tiltPoint = { x: event.clientX, y: event.clientY };
-    if (tiltFrame) return;
-    tiltFrame = requestAnimationFrame(() => {
-      tiltFrame = 0;
-      const box = proof.getBoundingClientRect();
-      const x = Math.max(-.5, Math.min(.5, (tiltPoint.x - box.left) / box.width - .5));
-      const y = Math.max(-.5, Math.min(.5, (tiltPoint.y - box.top) / box.height - .5));
-      proof.style.setProperty("--tilt-x", `${-y * 7}deg`);
-      proof.style.setProperty("--tilt-y", `${x * 9}deg`);
-    });
-  }, { passive: true });
-  proof.addEventListener("pointerleave", resetTilt);
-  reduceMotion.addEventListener("change", resetTilt);
-
   const entrances = new Set();
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(entries => {
@@ -83,8 +59,8 @@
         observer.unobserve(target);
         if (reduceMotion.matches || location.hash || !target.animate) return;
         const animation = target.animate([
-          { opacity: .45, transform: "translateY(18px)" },
-          { opacity: 1, transform: "translateY(0)" }
+          { opacity: .45, translate: "0 18px" },
+          { opacity: 1, translate: "0 0" }
         ], { duration: 700, easing: "cubic-bezier(.22,1,.36,1)" });
         entrances.add(animation);
         animation.addEventListener("finish", () => entrances.delete(animation), { once: true });

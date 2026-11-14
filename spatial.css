@@ -1,0 +1,170 @@
+/* A shallow 3D exhibition: real work stays in the foreground. */
+.spatial-hero {
+  --scene-x: 0;
+  --scene-y: 0;
+  --scene-scroll: 0;
+  min-height: 600px;
+  perspective: 1400px;
+  perspective-origin: 60% 45%;
+  background: radial-gradient(ellipse at 82% 8%, #355572, transparent 60%), linear-gradient(115deg, #0d1929, #182c43);
+}
+.spatial-hero .hero-copy {
+  transform: translate3d(calc(var(--scene-x) * -8px), calc(var(--scene-y) * -5px + var(--scene-scroll) * 10px), 0);
+}
+.spatial-hero .hero-title span + span {
+  text-shadow: 0 1px 0 #91a6bf, 0 2px 0 #455d77, 0 8px 20px #030c1c55;
+}
+.spatial-hero .hero-flow {
+  transform: translate3d(calc(var(--scene-x) * 7px), calc(var(--scene-y) * 4px), -24px) scale(1.06);
+  opacity: .6;
+}
+.spatial-room {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  perspective: 800px;
+  perspective-origin: 68% 44%;
+  pointer-events: none;
+}
+.spatial-floor {
+  position: absolute;
+  left: 12%;
+  top: 56%;
+  width: 110%;
+  height: 520px;
+  border: 1px solid #b0d8ff33;
+  background: linear-gradient(#adceef26 1px, transparent 1px), linear-gradient(90deg, #adceef26 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: translate3d(calc(var(--scene-x) * -12px), calc(var(--scene-scroll) * 16px), -80px) rotateX(68deg) rotateZ(-12deg);
+  transform-origin: 50% 0;
+  mask-image: radial-gradient(ellipse 65% 70% at 54% 0%, #0009, transparent 95%);
+}
+.spatial-wall {
+  position: absolute;
+  inset: 11% 3% 16% 52%;
+  border: 1px solid #c5e5ff29;
+  border-radius: 26px;
+  background: linear-gradient(120deg, #a3caff04, #d5eaff07);
+  box-shadow: inset 0 1px 0 #d8edff1a;
+  transform: translate3d(calc(var(--scene-x) * -18px), calc(var(--scene-y) * -9px), -70px) rotateY(-16deg) rotateX(8deg);
+}
+.spatial-wall::after {
+  position: absolute;
+  inset: 12px;
+  border: 1px solid #c5e5ff0f;
+  border-radius: 18px;
+  content: "";
+}
+.spatial-hero > [data-image-gallery] {
+  perspective: none;
+  transform-style: preserve-3d;
+  transform: translate3d(calc(var(--scene-x) * 12px), calc(var(--scene-y) * 8px - var(--scene-scroll) * 12px), 0)
+    rotateX(calc(8deg - var(--scene-y) * 5deg + var(--scene-scroll) * 3deg))
+    rotateY(calc(-14deg + var(--scene-x) * 9deg));
+}
+.spatial-hero > [data-image-gallery]::after {
+  position: absolute;
+  inset: auto 0 -76px;
+  height: 128px;
+  border: 1px solid #bedcff38;
+  border-radius: 24px;
+  background: linear-gradient(125deg, #bddbff18, #9abfff04);
+  box-shadow: 0 4px 0 #7794b61c, 0 8px 0 #7794b610, 0 24px 36px #0003;
+  transform: rotateX(76deg) translateZ(-18px);
+  pointer-events: none;
+  content: "";
+}
+.spatial-hero .hero-proof,
+.spatial-hero .hero-proof:is(:hover, :focus-visible) {
+  transform-style: preserve-3d;
+  transform: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  border-color: #d4eaff59;
+}
+.spatial-hero .hero-proof::before,
+.spatial-hero .hero-proof::after {
+  position: absolute;
+  inset: -1px;
+  border: 1px solid #cde8ff47;
+  border-radius: inherit;
+  pointer-events: none;
+  content: "";
+}
+.spatial-hero .hero-proof::before {
+  background: radial-gradient(ellipse at calc(50% + var(--scene-x) * 36%) calc(25% + var(--scene-y) * 30%), #e5f4ff26, transparent 72%), linear-gradient(135deg, #c9e4ff12, #5e82aa0c);
+  box-shadow: inset 0 1px 0 #fff7, inset 0 -1px 0 #a0caff40, 0 28px 48px -18px #0005;
+  transform: translateZ(-1px);
+}
+.spatial-hero .hero-proof::after {
+  background: linear-gradient(135deg, #bddfff0a, #8ab6e008);
+  border-color: #c9e5ff33;
+  transform: translateZ(-30px);
+}
+.spatial-hero .proof-header { transform: translateZ(22px); }
+.spatial-hero .proof-caption { transform: translateZ(28px); }
+.spatial-hero .proof-art { perspective: none; transform-style: preserve-3d; }
+.spatial-hero .proof-art img { box-shadow: 0 24px 26px -14px #0008, 0 2px 0 #c2ccda; }
+.spatial-hero .proof-art img:first-child { transform: translateZ(64px) rotate(-8deg) translate(-2%, -2%); }
+.spatial-hero .proof-art img:last-child { transform: translateZ(18px) rotate(9deg) translate(3%, 4%); }
+.spatial-hero .hero-proof:is(:hover, :focus-visible) .proof-art img:first-child { transform: translateZ(96px) rotate(-10deg) translate(-4%, -4%); }
+.spatial-hero .hero-proof:is(:hover, :focus-visible) .proof-art img:last-child { transform: translateZ(36px) rotate(11deg) translate(5%, 6%); }
+
+/* Do not transform the document: fixed navigation and image dialogs stay fixed. */
+[data-spatial-card] {
+  --card-x: 0;
+  --card-y: 0;
+  --card-lift: 0;
+  transform: perspective(1100px) translateY(calc(var(--card-lift) * -7px)) rotateX(calc(var(--card-y) * -4deg)) rotateY(calc(var(--card-x) * 5deg));
+  transition: border-color .3s, box-shadow .3s;
+  box-shadow: 0 1px 0 #d9e3ef, 0 3px 0 #dce5ef, 0 5px 0 #e2e9f1, 0 16px 28px -20px #244b7438, inset 0 1px 0 #fff;
+}
+.project-gallery[data-spatial-card]:hover,
+.github-card[data-spatial-card]:hover {
+  transform: perspective(1100px) translateY(calc(var(--card-lift) * -7px)) rotateX(calc(var(--card-y) * -4deg)) rotateY(calc(var(--card-x) * 5deg));
+}
+[data-spatial-card][data-spatial-active] {
+  box-shadow: calc(var(--card-x) * -10px) calc(23px + var(--card-y) * -5px) 38px -18px #234c7954, 0 2px 0 #c7d6e7, 0 5px 0 #d9e3ef, inset 0 1px 0 #fff;
+}
+.about-section[data-spatial-card] { transform: perspective(1800px) rotateX(calc(var(--card-y) * -1.5deg)) rotateY(calc(var(--card-x) * 1.5deg)); }
+.creator-channel[data-spatial-card] { box-shadow: 0 2px 0 #c8d8ec66, 0 12px 20px -16px #31557d30, inset 0 1px 0 #fff9; }
+.creator-channel[data-spatial-active] { box-shadow: 0 4px 0 #c8d8ec80, 0 22px 28px -20px #31557d66, inset 0 1px 0 #fff; }
+.simulation-placeholder[data-spatial-card] .simulation-glyph { transform: translate(calc(var(--card-x) * 6px), calc(var(--card-y) * 4px)); }
+.creator-channel[data-spatial-card] .creator-avatar { transform: perspective(400px) translateZ(calc(var(--card-lift) * 12px)); }
+
+@media (max-width: 1100px) and (min-width: 761px) {
+  .spatial-hero { min-height: 540px; gap: 42px; padding-block: 60px; }
+}
+@media (max-width: 760px) {
+  .spatial-hero { min-height: 0; padding-bottom: 64px; gap: 48px; perspective-origin: 50% 75%; }
+  .spatial-hero .hero-copy { transform: none; }
+  .spatial-hero > [data-image-gallery] { width: min(400px, 94%); transform: translateY(calc(var(--scene-scroll) * -6px)) rotateX(6deg) rotateY(-8deg); }
+  .spatial-hero .proof-art img:first-child { transform: translateZ(40px) rotate(-7deg) translate(-1%, -1%); }
+  .spatial-hero .proof-art img:last-child { transform: translateZ(12px) rotate(8deg) translate(2%, 2%); }
+  .spatial-hero .hero-proof:is(:hover, :focus-visible) .proof-art img:first-child { transform: translateZ(40px) rotate(-7deg) translate(-1%, -1%); }
+  .spatial-hero .hero-proof:is(:hover, :focus-visible) .proof-art img:last-child { transform: translateZ(12px) rotate(8deg) translate(2%, 2%); }
+  .spatial-hero .proof-header, .spatial-hero .proof-caption { transform: translateZ(12px); }
+  .spatial-hero .hero-proof::after { transform: translateZ(-22px); }
+  .spatial-wall { inset: 53% 4% 8% 10%; }
+  .spatial-floor { top: 83%; left: -35%; width: 180%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spatial-hero .hero-copy, .spatial-hero .hero-flow,
+  [data-spatial-card], .project-gallery[data-spatial-card]:hover,
+  .github-card[data-spatial-card]:hover, .about-section[data-spatial-card],
+  .creator-channel[data-spatial-card] .creator-avatar,
+  .simulation-placeholder[data-spatial-card] .simulation-glyph { transform: none; }
+  .spatial-hero > [data-image-gallery] { transform: rotateX(6deg) rotateY(-8deg); }
+  .spatial-hero .hero-proof:is(:hover, :focus-visible) .proof-art img:first-child { transform: translateZ(40px) rotate(-7deg); }
+  .spatial-hero .hero-proof:is(:hover, :focus-visible) .proof-art img:last-child { transform: translateZ(12px) rotate(8deg); }
+  .spatial-hero .proof-art img:first-child { transform: translateZ(40px) rotate(-7deg); }
+  .spatial-hero .proof-art img:last-child { transform: translateZ(12px) rotate(8deg); }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .spatial-room { display: none; }
+  .spatial-hero .hero-proof::before { background: #263c55; }
+  .spatial-hero .hero-title span + span { text-shadow: none; }
+}

@@ -79,11 +79,21 @@
     const width = element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     const height = element.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
     const scale = Math.min(width / element.naturalWidth, height / element.naturalHeight);
-    const w = element.naturalWidth * scale, h = element.naturalHeight * scale;
+    let w = element.naturalWidth * scale, h = element.naturalHeight * scale;
     let angle = 0;
     if (style.transform !== "none" && typeof DOMMatrixReadOnly !== "undefined") {
       const matrix = new DOMMatrixReadOnly(style.transform);
       angle = Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+    }
+    // Account for projection inherited from a tilted/scaled card. Remove the
+    // image's own rotation from the bounds before estimating its screen scale.
+    const radians = angle * Math.PI / 180;
+    const cos = Math.abs(Math.cos(radians)), sin = Math.abs(Math.sin(radians));
+    const footprintWidth = element.offsetWidth * cos + element.offsetHeight * sin;
+    const footprintHeight = element.offsetWidth * sin + element.offsetHeight * cos;
+    if (footprintWidth && footprintHeight) {
+      w *= rect.width / footprintWidth;
+      h *= rect.height / footprintHeight;
     }
     return { left: rect.left + (rect.width - w) / 2, top: rect.top + (rect.height - h) / 2, width: w, height: h, angle };
   }
