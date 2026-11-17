@@ -12,12 +12,19 @@
   const resultCount = document.getElementById("result-count");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const scrollTrack = new WeakMap();
+  const allTracks = new Set();
   const visibleTracks = new Set();
+  let trackFrame = 0;
+  let wakeTimer = 0;
+  let previousFrame = 0;
+  let pageActive = true;
+  let viewerOpen = false;
   const trackObserver = new IntersectionObserver(entries => {
     for (const { target, isIntersecting } of entries) {
-      if (isIntersecting && target.isConnected) visibleTracks.add(target);
+      if (isIntersecting && target.isConnected && scrollTrack.has(target)) visibleTracks.add(target);
       else visibleTracks.delete(target);
     }
+    syncTrackMotion();
   });
   let matchingWorks = works;
   let visibleCount = 0;
@@ -44,6 +51,20 @@
       card.classList.add("project-gallery");
       card.dataset.imageGallery = "";
       const body = createCardBody(work, images[0].url);
+      body.querySelector(".project-gallery-entry").setAttribute("aria-label", `查看「${work.title}」图集，共 ${images.length} 张图`);
+      const footer = document.createElement("div");
+      footer.className = "project-gallery-footer";
+      footer.setAttribute("aria-hidden", "true");
+      const count = document.createElement("span");
+      count.className = "project-gallery-count";
+      const number = document.createElement("strong");
+      number.textContent = String(images.length).padStart(2, "0");
+      count.append(number, "张图");
+      const action = document.createElement("span");
+      action.className = "project-gallery-open";
+      action.innerHTML = '查看图集 <span class="project-gallery-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></span>';
+      footer.append(count, action);
+      body.append(footer);
       card.append(body, createCarousel(images));
       return card;
     }
@@ -159,22 +180,69 @@
     let lastPosition = 0;
     let manualUntil = 0;
     let hovered = false;
-    const delayAutoScroll = () => { manualUntil = performance.now() + 1200; };
-    thumbnails.addEventListener("pointerenter", event => { hovered = event.pointerType === "mouse"; });
-    thumbnails.addEventListener("pointerleave", () => { hovered = false; });
-    thumbnails.addEventListener("wheel", delayAutoScroll, { passive: true });
-    thumbnails.addEventListener("touchend", delayAutoScroll, { passive: true });
-    thumbnails.addEventListener("touchmove", delayAutoScroll, { passive: true });
-    scrollTrack.set(thumbnails, (elapsed, now) => {
-      const position = thumbnails.scrollLeft;
-      if (position !== lastPosition) offset = position;
-      lastPosition = position;
-      if (hovered || now < manualUntil || thumbnails.matches(":has(:focus-visible), :focus-visible")) return;
-      const loopWidth = copies[0].offsetLeft - links[0].offsetLeft;
-      if (!loopWidth) return;
-      offset = (offset + elapsed * 52 / 1000) % loopWidth;
-      thumbnails.scrollLeft = offset;
-      lastPosition = thumbnails.scrollLeft;
+    let surface = carousel;
+    const touches = new Set();
+    const events = new AbortController();
+    const passive = { passive: true, signal: events.signal };
+    const delayAutoScroll = () => {
+      manualUntil = performance.now() + 1200;
+      syncTrackMotion();
+    };
+    const releaseTouch = event => {
+      let released = false;
+      for (const touch of event.changedTouches) released = touches.delete(touch.identifier) || released;
+      if (released) delayAutoScroll();
+    };
+    const track = {
+      readyAt() {
+        if (hovered || touches.size || surface.matches(":focus-visible, :has(:focus-visible)")) return Infinity;
+        return manualUntil;
+      },
+      advance(elapsed) {
+        const position = thumbnails.scrollLeft;
+        if (position !== lastPosition) offset = position;
+        const loopWidth = copies[0].offsetLeft - links[0].offsetLeft;
+        if (!loopWidth) return;
+        offset = (offset + elapsed * 52 / 1000) % loopWidth;
+        thumbnails.scrollLeft = offset;
+        lastPosition = thumbnails.scrollLeft;
+      },
+      resetInput() {
+        hovered = matchMedia("(hover: hover) and (pointer: fine)").matches && surface.matches(":hover");
+        touches.clear();
+      },
+      destroy() {
+        events.abort();
+        allTracks.delete(thumbnails);
+        scrollTrack.delete(thumbnails);
+      }
+    };
+    scrollTrack.set(thumbnails, track);
+    allTracks.add(thumbnails);
+    // The card is attached after createCarousel returns. Bind to its full surface.
+    queueMicrotask(() => {
+      if (events.signal.aborted) return;
+      surface = thumbnails.closest(".project-gallery") || carousel;
+      surface.addEventListener("pointerenter", event => {
+        if (event.pointerType !== "mouse") return;
+        hovered = true;
+        syncTrackMotion();
+      }, passive);
+      surface.addEventListener("pointerleave", () => {
+        hovered = false;
+        syncTrackMotion();
+      }, passive);
+      surface.addEventListener("focusin", syncTrackMotion, passive);
+      surface.addEventListener("focusout", () => queueMicrotask(syncTrackMotion), passive);
+      surface.addEventListener("wheel", delayAutoScroll, passive);
+      surface.addEventListener("touchstart", event => {
+        for (const touch of event.changedTouches) touches.add(touch.identifier);
+        syncTrackMotion();
+      }, passive);
+      // Touch events keep the gesture paused even after native scrolling cancels pointers.
+      surface.addEventListener("touchmove", delayAutoScroll, passive);
+      window.addEventListener("touchend", releaseTouch, passive);
+      window.addEventListener("touchcancel", releaseTouch, passive);
     });
     trackObserver.observe(thumbnails);
     return carousel;
@@ -198,12 +266,15 @@
     for (const track of grid.querySelectorAll(".project-thumbnails")) {
       trackObserver.unobserve(track);
       visibleTracks.delete(track);
+      scrollTrack.get(track)?.destroy();
     }
     grid.replaceChildren();
     visibleCount = 0;
-    resultCount.textContent = matchingWorks.length === works.length
-      ? works.length + " 件作品"
-      : matchingWorks.length + " / " + works.length + " 件作品";
+    const allGalleries = matchingWorks.length > 0 && matchingWorks.every(work => work.images?.length);
+    const imageCount = matchingWorks.reduce((total, work) => total + (work.images || []).filter(image => safeUrl(image?.url)).length, 0);
+    resultCount.textContent = allGalleries
+      ? `${matchingWorks.length} 组作品 · ${imageCount} 张图`
+      : `${matchingWorks.length} 件作品`;
     grid.hidden = matchingWorks.length === 0;
     emptyState.hidden = matchingWorks.length > 0;
     document.getElementById("empty-title").textContent = works.length
@@ -211,6 +282,7 @@
     document.getElementById("empty-description").textContent = works.length
       ? "试试其他关键词或分类。" : "后续作品将在这里陆续展示。";
     showNextPage();
+    syncTrackMotion();
   }
 
   const categories = [...new Set(works.map(work => work.category || "未分类"))];
@@ -253,14 +325,92 @@
     backToTop.hidden = hero.isIntersecting || hero.boundingClientRect.top >= 0;
   }).observe(document.querySelector(".hero"));
 
-  let previousFrame = 0;
+  function canAnimateTracks() {
+    return pageActive && !document.hidden && !reduceMotion.matches && !viewerOpen;
+  }
+
+  function stopTrackMotion() {
+    cancelAnimationFrame(trackFrame);
+    clearTimeout(wakeTimer);
+    trackFrame = 0;
+    wakeTimer = 0;
+    previousFrame = 0;
+  }
+
+  function syncTrackMotion() {
+    clearTimeout(wakeTimer);
+    wakeTimer = 0;
+    if (!canAnimateTracks()) {
+      stopTrackMotion();
+      return;
+    }
+    const now = performance.now();
+    let ready = false;
+    let nextWake = Infinity;
+    for (const element of visibleTracks) {
+      const track = scrollTrack.get(element);
+      if (!element.isConnected || !track) {
+        visibleTracks.delete(element);
+        continue;
+      }
+      const when = track.readyAt();
+      if (when <= now) ready = true;
+      else nextWake = Math.min(nextWake, when);
+    }
+    if (ready) {
+      if (!trackFrame) trackFrame = requestAnimationFrame(animateTracks);
+    } else {
+      stopTrackMotion();
+      if (Number.isFinite(nextWake)) {
+        wakeTimer = setTimeout(syncTrackMotion, Math.max(1, nextWake - now));
+      }
+    }
+  }
+
   function animateTracks(now) {
+    trackFrame = 0;
+    if (!canAnimateTracks()) {
+      stopTrackMotion();
+      return;
+    }
     const elapsed = Math.min(now - (previousFrame || now), 50);
     previousFrame = now;
-    if (!reduceMotion.matches && visibleTracks.size && !document.hidden && !document.querySelector(".image-viewer[open]")) {
-      for (const track of visibleTracks) scrollTrack.get(track)(elapsed, now);
+    for (const element of visibleTracks) {
+      const track = scrollTrack.get(element);
+      if (element.isConnected && track && track.readyAt() <= now) track.advance(elapsed);
     }
-    window.requestAnimationFrame(animateTracks);
+    syncTrackMotion();
   }
-  window.requestAnimationFrame(animateTracks);
+
+  function resetTrackInput() {
+    for (const element of allTracks) scrollTrack.get(element)?.resetInput();
+  }
+  function observeViewer() {
+    const viewer = document.querySelector(".image-viewer");
+    if (!viewer) return;
+    const syncViewer = () => {
+      viewerOpen = viewer.open;
+      syncTrackMotion();
+    };
+    new MutationObserver(syncViewer).observe(viewer, { attributes: true, attributeFilter: ["open"] });
+    syncViewer();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", observeViewer, { once: true });
+  } else {
+    observeViewer();
+  }
+  reduceMotion.addEventListener("change", syncTrackMotion);
+  document.addEventListener("visibilitychange", () => {
+    resetTrackInput();
+    syncTrackMotion();
+  });
+  window.addEventListener("blur", () => { resetTrackInput(); syncTrackMotion(); });
+  window.addEventListener("focus", () => { resetTrackInput(); syncTrackMotion(); });
+  window.addEventListener("pagehide", () => {
+    pageActive = false;
+    resetTrackInput();
+    stopTrackMotion();
+  });
+  window.addEventListener("pageshow", () => { pageActive = true; syncTrackMotion(); });
 })();

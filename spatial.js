@@ -119,7 +119,7 @@
     });
   });
   function collectCards() {
-    for (const element of document.querySelectorAll(".project-gallery, .github-card, .simulation-placeholder, .about-section, .creator-channel")) {
+    for (const element of document.querySelectorAll(".project-gallery, .github-card, .about-section, .creator-channel")) {
       if (records.has(element)) continue;
       const record = { element, x: 0, y: 0, lift: 0, tx: 0, ty: 0, tl: 0 };
       element.dataset.spatialCard = "";
