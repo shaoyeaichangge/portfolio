@@ -6,7 +6,6 @@
   const canvas = stage.querySelector("canvas");
   const controls = stage.querySelector(".kinetic-tools");
   const expandButton = stage.querySelector('[data-action="expand"]');
-  const pauseButton = stage.querySelector('[data-action="pause"]');
   const resetButton = stage.querySelector('[data-action="reset"]');
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
   const viewer = document.querySelector(".image-viewer");
@@ -192,20 +191,16 @@
     }
     function syncButtons(){
       expandButton.setAttribute('aria-pressed',String(expanded));expandButton.querySelector('span').textContent=expanded?'合拢结构':'展开结构';
-      pauseButton.setAttribute('aria-pressed',String(paused||reduceMotion.matches));
-      pauseButton.setAttribute('aria-label',reduceMotion.matches?'已按系统设置停止动态效果':paused?'继续自动转动':'暂停自动转动');
-      pauseButton.disabled=reduceMotion.matches;
     }
     function reset(){targetYaw=-.42;targetPitch=.2;expanded=false;targetPx=targetPy=0;syncButtons();schedule();}
     function toggleExpand(){expanded=!expanded;syncButtons();schedule();}
-    function togglePause(){paused=!paused;syncButtons();schedule();}
     function motionChange(){paused=reduceMotion.matches;elapsed=1.2;endDrag();syncButtons();schedule();}
     function visibilityChange(){endDrag();if(!canRender()){cancelAnimationFrame(frame);frame=0;}else schedule();}
     function contextLost(event){event.preventDefault();lost=true;cancelAnimationFrame(frame);frame=0;endDrag();fallback();}
     function contextRestored(){try{lightStudio();lost=false;hero.classList.add('kinetic-ready');controls.hidden=false;viewport.tabIndex=0;viewport.style.cursor='';measure();}catch{fallback();}}
     viewport.addEventListener('pointerdown',pointerDown);viewport.addEventListener('pointermove',pointerMove);
     viewport.addEventListener('pointerup',endDrag);viewport.addEventListener('pointercancel',endDrag);viewport.addEventListener('lostpointercapture',endDrag);viewport.addEventListener('pointerleave',leave);viewport.addEventListener('keydown',keyDown);
-    expandButton.addEventListener('click',toggleExpand);pauseButton.addEventListener('click',togglePause);resetButton.addEventListener('click',reset);
+    expandButton.addEventListener('click',toggleExpand);resetButton.addEventListener('click',reset);
     canvas.addEventListener('webglcontextlost',contextLost);canvas.addEventListener('webglcontextrestored',contextRestored);
     const resizeObserver=new ResizeObserver(measure);resizeObserver.observe(viewport);
     const observer=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;visibilityChange();if(visible)onScroll();});observer.observe(hero);

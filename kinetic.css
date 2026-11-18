@@ -33,9 +33,6 @@
 .kinetic-button:focus-visible { outline: 2px solid #c9e5ff; outline-offset: 4px; }
 .kinetic-button:disabled { opacity: .5; cursor: default; }
 .kinetic-button svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.kinetic-button[data-action="pause"] { padding: 0; }
-.kinetic-button .play-icon, .kinetic-button[aria-pressed="true"] .pause-icon { display: none; }
-.kinetic-button[aria-pressed="true"] .play-icon { display: block; }
 .kinetic-hero > [data-image-gallery] {
   position: relative;
   z-index: 4;
