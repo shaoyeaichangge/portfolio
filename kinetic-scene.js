@@ -3,7 +3,7 @@
   const stage = hero?.querySelector(".kinetic-stage");
   if (!stage) return;
   const viewport = stage.querySelector(".kinetic-viewport");
-  const canvas = stage.querySelector("canvas");
+  const canvas = stage.querySelector(".kinetic-canvas");
   const controls = stage.querySelector(".kinetic-tools");
   const expandButton = stage.querySelector('[data-action="expand"]');
   const resetButton = stage.querySelector('[data-action="reset"]');
@@ -16,15 +16,23 @@
     viewport.removeAttribute("tabindex");
     viewport.style.cursor = "default";
   }
-  import("./assets/lib/three-0.170.0.module.min.js").then(THREE => {
-    let renderer;
-    try { renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" }); }
-    catch { fallback(); return; }
-    try { init(THREE, renderer); }
-    catch { dispose?.(); renderer.dispose(); fallback(); }
+  Promise.all([
+    import("./assets/lib/three-0.170.0.module.min.js"),
+    import("./kinetic-flow.js?v=1").catch(() => null),
+  ]).then(([THREE, flowModule]) => {
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" });
+    try {
+      const flow = flowModule?.createFlowField(stage.querySelector(".kinetic-flow"));
+      stage.classList.toggle("kinetic-flow-ready", Boolean(flow));
+      init(THREE, renderer, flow);
+    } catch (error) {
+      dispose?.();
+      renderer.dispose();
+      throw error;
+    }
   }).catch(fallback);
 
-  function init(T, renderer) {
+  function init(T, renderer, flow) {
     const scene = new T.Scene();
     const camera = new T.PerspectiveCamera(36, 1, .1, 40);
     renderer.outputColorSpace = T.SRGBColorSpace;
@@ -82,30 +90,6 @@
     const wireBase = geometry(new T.TorusKnotGeometry(1.13, .34, 100, 8, 2, 3));
     const wire = new T.LineSegments(geometry(new T.WireframeGeometry(wireBase)), wireMaterial); body.add(wire);
 
-    const streams = new T.Group(); sculpture.add(streams);
-    const curves = [];
-    const lineMaterial = material(new T.LineBasicMaterial({ color: 0x7298c2, transparent: true, opacity: .15, depthWrite: false }));
-    for (let i = 0; i < 11; i++) {
-      const angle = i / 11 * Math.PI * 2;
-      const points = [];
-      for (let j = 0; j <= 64; j++) {
-        const x = j / 64 * 8 - 4;
-        const radius = 1.55 + .45 * Math.exp(-x * x / 4);
-        points.push(new T.Vector3(x, Math.cos(angle) * radius, Math.sin(angle) * radius));
-      }
-      const curve = new T.CatmullRomCurve3(points); curves.push(curve);
-      streams.add(new T.Line(geometry(new T.BufferGeometry().setFromPoints(curve.getPoints(96))), lineMaterial));
-    }
-    const particleCount = 66;
-    const pointPositions = new Float32Array(particleCount * 3);
-    const pointGeometry = geometry(new T.BufferGeometry()); pointGeometry.setAttribute("position", new T.BufferAttribute(pointPositions, 3));
-    const pointMaterial = material(new T.ShaderMaterial({
-      uniforms: { pixelRatio: { value: 1 } }, transparent: true, depthWrite: false, blending: T.AdditiveBlending,
-      vertexShader: 'uniform float pixelRatio; varying float fade; void main(){ vec4 p=modelViewMatrix*vec4(position,1.); gl_Position=projectionMatrix*p; gl_PointSize=min(8.,32./-p.z)*pixelRatio; fade=1.-smoothstep(2.5,4.,abs(position.x)); }',
-      fragmentShader: 'varying float fade; void main(){ float r=length(gl_PointCoord-.5)*2.; float a=exp(-r*r*5.)*fade; gl_FragColor=vec4(.65,.83,1.,a*.85); }'
-    }));
-    const particles = new T.Points(pointGeometry, pointMaterial); particles.frustumCulled = false; streams.add(particles);
-
     const shadowCanvas = document.createElement("canvas"); shadowCanvas.width = shadowCanvas.height = 128;
     const shadowContext = shadowCanvas.getContext("2d");
     const gradient = shadowContext.createRadialGradient(64,64,4,64,64,62); gradient.addColorStop(0,"#000b"); gradient.addColorStop(.45,"#0005"); gradient.addColorStop(1,"#0000");
@@ -120,8 +104,7 @@
     let frame=0, last=0, phase=0, elapsed=0, visible=true, lost=false, destroyed=false;
     let paused=reduceMotion.matches, expanded=false, spread=0, scroll=0, scrollTarget=0;
     let yaw=-.42, pitch=.2, targetYaw=yaw, targetPitch=pitch, px=0, py=0, targetPx=0, targetPy=0;
-    let drag, heroTop=0, heroHeight=1, width=1, height=1;
-    const vector=new T.Vector3();
+    let drag, holdTimer=0, heroTop=0, heroHeight=1, width=1, height=1;
     const canRender=()=>!destroyed&&!lost&&visible&&!document.hidden&&!viewer?.open;
     const auto=()=>!paused&&!reduceMotion.matches&&!drag;
     function schedule(){if(!frame&&canRender()){last=0;frame=requestAnimationFrame(tick);}}
@@ -144,46 +127,70 @@
         piece.rotation.set(spread*(i-1)*.1,spread*(i-1)*.12,0);
       });
       wireMaterial.opacity=spread*.2;wire.visible=spread>.005;
-      streams.rotation.set(.2,-.15,-.32); streams.scale.setScalar(1+spread*.06);
-      for(let i=0;i<particleCount;i++){
-        const t=(i/particleCount+phase*.055)%1;
-        curves[i%curves.length].getPoint(t,vector);vector.toArray(pointPositions,i*3);
-      }
-      pointGeometry.attributes.position.needsUpdate=true;
       camera.position.set(px*.45,.35+py*.3,(width<450?7.8:8.5)-scroll*.35+spread*1.8);
       camera.lookAt(0,.05,0);
       key.position.x=-3+px*2;
+      flow?.draw(dt, reduceMotion.matches);
       renderer.render(scene,camera);
       const moving=Math.abs(targetYaw-yaw)+Math.abs(targetPitch-pitch)+Math.abs(targetPx-px)+Math.abs(targetPy-py)+Math.abs((expanded?1:0)-spread)+Math.abs(scrollTarget-scroll)>.001;
-      if(auto()||moving)frame=requestAnimationFrame(tick);
+      if(auto()||moving||(!reduceMotion.matches&&flow?.active))frame=requestAnimationFrame(tick);
     }
     function measure(){
       if(destroyed)return;
       const rect=viewport.getBoundingClientRect();width=Math.max(1,rect.width);height=Math.max(1,rect.height);
       const ratio=Math.min(devicePixelRatio||1,innerWidth<761?1.25:1.5);
-      renderer.setPixelRatio(ratio);renderer.setSize(width,height,false);pointMaterial.uniforms.pixelRatio.value=ratio;
+      renderer.setPixelRatio(ratio);renderer.setSize(width,height,false);
+      flow?.resize(width,height,ratio);
       camera.aspect=width/height;camera.fov=width<450?44:36;camera.updateProjectionMatrix();
       const bounds=hero.getBoundingClientRect();heroTop=bounds.top+scrollY;heroHeight=bounds.height;
       onScroll();schedule();
     }
     function onScroll(){if(visible){scrollTarget=reduceMotion.matches?0:Math.max(0,Math.min(1,(scrollY-heroTop)/heroHeight));schedule();}}
-    function endDrag(){const id=drag?.id;drag=undefined;delete viewport.dataset.dragging;if(id!==undefined&&viewport.hasPointerCapture(id))viewport.releasePointerCapture(id);schedule();}
+    function endDrag(){
+      clearTimeout(holdTimer);
+      flow?.release();
+      const id=drag?.id;
+      drag=undefined;
+      delete viewport.dataset.dragging;
+      if(id!==undefined&&viewport.hasPointerCapture(id))viewport.releasePointerCapture(id);
+      schedule();
+    }
+    function disturb(clientX, clientY, held, bounds = viewport.getBoundingClientRect()) {
+      if (reduceMotion.matches || !canRender()) return;
+      flow?.setPointer(clientX - bounds.left, clientY - bounds.top, held);
+      schedule();
+    }
     function pointerDown(event){
       if(!event.isPrimary||event.button!==0)return;
       drag={id:event.pointerId,x:event.clientX,y:event.clientY,yaw:targetYaw,pitch:targetPitch,touch:event.pointerType==="touch"};
       viewport.setPointerCapture(event.pointerId);viewport.dataset.dragging="";
+      if (!drag.touch) disturb(event.clientX, event.clientY, true);
+      else if (flow && !reduceMotion.matches) holdTimer = setTimeout(() => {
+        if (drag?.id === event.pointerId) disturb(drag.x, drag.y, true);
+      }, 145);
     }
     function pointerMove(event){
       if(drag?.id===event.pointerId){
         const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
         if(drag.touch&&Math.abs(dy)>Math.abs(dx)*1.3&&Math.abs(dy)>10){endDrag();return;}
+        if (!drag.touch || Math.abs(dx) > 8) {
+          clearTimeout(holdTimer);
+          disturb(event.clientX, event.clientY, true);
+        }
         targetYaw=drag.yaw+dx*.009;targetPitch=Math.max(-1.1,Math.min(1.1,drag.pitch+dy*.006));schedule();
       }else if(event.pointerType==="mouse"&&!reduceMotion.matches){
-        const r=viewport.getBoundingClientRect();targetPx=(event.clientX-r.left)/r.width*2-1;targetPy=-((event.clientY-r.top)/r.height*2-1);schedule();
+        const r=viewport.getBoundingClientRect();targetPx=(event.clientX-r.left)/r.width*2-1;targetPy=-((event.clientY-r.top)/r.height*2-1);
+        disturb(event.clientX,event.clientY,false,r);
       }
     }
-    function leave(){targetPx=targetPy=0;schedule();}
+    function leave(){if(!drag)flow?.release();targetPx=targetPy=0;schedule();}
     function keyDown(event){
+      if (event.code === "Space" && flow && !reduceMotion.matches) {
+        event.preventDefault();
+        flow.setPointer(width * .26, height * .36, true);
+        schedule();
+        return;
+      }
       if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home'].includes(event.key))return;
       event.preventDefault();
       if(event.key==='Home')reset();
@@ -191,8 +198,11 @@
     }
     function syncButtons(){
       expandButton.setAttribute('aria-pressed',String(expanded));expandButton.querySelector('span').textContent=expanded?'合拢结构':'展开结构';
+      const canSteer = flow && !reduceMotion.matches;
+      viewport.setAttribute('aria-keyshortcuts', `ArrowLeft ArrowRight ArrowUp ArrowDown Home${canSteer ? ' Space' : ''}`);
+      viewport.setAttribute('aria-label', `三维曲面装置，可拖动或用方向键旋转，Home 键复位${canSteer ? '，按住空格扰动流线' : ''}`);
     }
-    function reset(){targetYaw=-.42;targetPitch=.2;expanded=false;targetPx=targetPy=0;syncButtons();schedule();}
+    function reset(){targetYaw=-.42;targetPitch=.2;expanded=false;targetPx=targetPy=0;flow?.clear();syncButtons();schedule();}
     function toggleExpand(){expanded=!expanded;syncButtons();schedule();}
     function motionChange(){paused=reduceMotion.matches;elapsed=1.2;endDrag();syncButtons();schedule();}
     function visibilityChange(){endDrag();if(!canRender()){cancelAnimationFrame(frame);frame=0;}else schedule();}
@@ -200,13 +210,15 @@
     function contextRestored(){try{lightStudio();lost=false;hero.classList.add('kinetic-ready');controls.hidden=false;viewport.tabIndex=0;viewport.style.cursor='';measure();}catch{fallback();}}
     viewport.addEventListener('pointerdown',pointerDown);viewport.addEventListener('pointermove',pointerMove);
     viewport.addEventListener('pointerup',endDrag);viewport.addEventListener('pointercancel',endDrag);viewport.addEventListener('lostpointercapture',endDrag);viewport.addEventListener('pointerleave',leave);viewport.addEventListener('keydown',keyDown);
+    viewport.addEventListener('keyup',event=>{if(event.code==='Space')flow?.release();});
+    viewport.addEventListener('blur',()=>flow?.release());
     expandButton.addEventListener('click',toggleExpand);resetButton.addEventListener('click',reset);
     canvas.addEventListener('webglcontextlost',contextLost);canvas.addEventListener('webglcontextrestored',contextRestored);
     const resizeObserver=new ResizeObserver(measure);resizeObserver.observe(viewport);
     const observer=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;visibilityChange();if(visible)onScroll();});observer.observe(hero);
     const modalObserver=new MutationObserver(visibilityChange);if(viewer)modalObserver.observe(viewer,{attributes:true,attributeFilter:['open']});
     window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('blur',endDrag);document.addEventListener('visibilitychange',visibilityChange);reduceMotion.addEventListener('change',motionChange);
-    window.addEventListener('pagehide',()=>{cancelAnimationFrame(frame);frame=0;});window.addEventListener('pageshow',schedule);
+    window.addEventListener('pagehide',()=>{endDrag();cancelAnimationFrame(frame);frame=0;});window.addEventListener('pageshow',schedule);
     dispose=()=>{destroyed=true;cancelAnimationFrame(frame);resizeObserver.disconnect();observer.disconnect();modalObserver.disconnect();geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());environment?.dispose();};
     syncButtons();measure();
     // Render a first frame before replacing the static, equally legible fallback.

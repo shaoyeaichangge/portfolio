@@ -19,15 +19,18 @@
 .kinetic-viewport { position: absolute; inset: 0; overflow: hidden; outline-offset: -12px; touch-action: pan-y pinch-zoom; cursor: grab; -webkit-user-select: none; user-select: none; }
 .kinetic-viewport[data-dragging] { cursor: grabbing; }
 .kinetic-viewport:focus-visible { outline: 1px solid #b9ddff99; border-radius: 24px; }
-.kinetic-canvas, .kinetic-poster { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.kinetic-canvas, .kinetic-poster, .kinetic-flow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .kinetic-poster { object-fit: contain; }
-.kinetic-canvas { opacity: 0; transition: opacity .8s; }
+.kinetic-canvas, .kinetic-flow { opacity: 0; transition: opacity .8s; }
 .kinetic-ready .kinetic-canvas { opacity: 1; }
+.kinetic-ready .kinetic-flow-ready .kinetic-flow { opacity: 1; }
 .kinetic-ready .kinetic-poster { opacity: 0; }
 .kinetic-tag { position: absolute; z-index: 2; top: 34px; right: 8%; display: flex; align-items: center; gap: 8px; color: #8fa8c4; font-size: 10px; letter-spacing: .14em; pointer-events: none; }
 .kinetic-tag::before { width: 5px; height: 5px; border-radius: 50%; background: #acd6ff; box-shadow: 0 0 10px #8ac4ff66; content: ""; }
 .kinetic-tools { position: absolute; z-index: 5; right: 9%; bottom: 32px; display: flex; align-items: center; gap: 8px; }
 .kinetic-hint { margin-right: 8px; color: #a8bdd4; font-size: 11px; letter-spacing: .03em; }
+.kinetic-flow-hint { display: none; }
+.kinetic-flow-ready .kinetic-flow-hint { display: inline; }
 .kinetic-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 40px; min-width: 40px; padding: 0 12px; border: 1px solid #cee5ff38; border-radius: 999px; color: #d9eaff; background: linear-gradient(125deg, #d4eaff14, #c1deff05); backdrop-filter: blur(16px); box-shadow: inset 0 1px 0 #ffffff21; cursor: pointer; font: 400 11px/1 var(--font-ui); transition: background .2s, border-color .2s; }
 .kinetic-button:hover, .kinetic-button[aria-pressed="true"] { background: #c4e0ff26; border-color: #c4e0ff80; }
 .kinetic-button:focus-visible { outline: 2px solid #c9e5ff; outline-offset: 4px; }
@@ -72,7 +75,6 @@
   .kinetic-hero .hero-copy { width: 47%; }
   .kinetic-hero .hero-title { font-size: 54px; }
   .kinetic-stage { left: 37%; right: -10%; }
-  .kinetic-hint { display: none; }
   .kinetic-tools { right: 16%; }
   .kinetic-tag { right: 16%; }
   .kinetic-hero > [data-image-gallery] { max-width: 46%; }
@@ -93,9 +95,9 @@
 @media (max-width: 400px) {
   .hero.kinetic-hero { padding-inline: 24px; }
   .kinetic-stage { height: 345px; margin-inline: -22px; }
-  .kinetic-hint { display: none; }
   .kinetic-hero .hero-proof { padding: 12px; gap: 4px 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .kinetic-canvas, .kinetic-button { transition: none; }
+  .kinetic-canvas, .kinetic-flow, .kinetic-button { transition: none; }
+  .kinetic-flow-ready .kinetic-flow-hint { display: none; }
 }

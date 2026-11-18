@@ -396,7 +396,7 @@ main { margin-block: 24px 32px; }
 <link rel="stylesheet" href="./studio.css?v=collections-2">
 <link rel="stylesheet" href="./skill-models.css?v=1">
 <link rel="stylesheet" href="./spatial.css?v=1">
-<link rel="stylesheet" href="./kinetic.css?v=2">
+<link rel="stylesheet" href="./kinetic.css?v=3">
 <link rel="stylesheet" href="./skills.css?v=skills-5">
 </head>
 <body id="top">
@@ -425,11 +425,12 @@ main { margin-block: 24px 32px; }
   <div class="kinetic-stage" role="group" aria-label="三维交互装置">
     <div class="kinetic-viewport" role="group" aria-label="三维曲面装置，可拖动或用方向键旋转，Home 键复位" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown Home">
       <img class="kinetic-poster" src="./assets/kinetic-study.webp" width="1000" height="1000" alt="" aria-hidden="true">
+      <canvas class="kinetic-flow" aria-hidden="true"></canvas>
       <canvas class="kinetic-canvas" aria-hidden="true"></canvas>
     </div>
-    <span class="kinetic-tag">交互装置</span>
+    <span class="kinetic-tag">流场演示</span>
     <div class="kinetic-tools" hidden>
-      <span class="kinetic-hint">拖动旋转</span>
+      <span class="kinetic-hint">拖动旋转<span class="kinetic-flow-hint"> · 按住改变流向</span></span>
       <button class="kinetic-button" type="button" data-action="expand" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m3 6 7-3 7 3-7 3-7-3Zm0 4 7 3 7-3M3 14l7 3 7-3"/></svg><span>展开结构</span></button>
       <button class="kinetic-button" type="button" data-action="reset" aria-label="恢复初始视角"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a7 7 0 1 1 0 6M4 3v4h4"/></svg></button>
     </div>
@@ -603,6 +604,6 @@ main { margin-block: 24px 32px; }
 <script src="./skill-models.js?v=1"></script>
 <script src="./skills.js?v=1"></script>
 <script src="./spatial.js?v=3"></script>
-<script src="./kinetic-scene.js?v=2"></script>
+<script src="./kinetic-scene.js?v=3"></script>
 </body>
 </html>
