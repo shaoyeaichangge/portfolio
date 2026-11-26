@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" fill="none">
+  <title>资源管理器状态诊断示意</title>
+  <desc>同一个资源管理器窗口从目标目录意外跳回桌面，经过逐层排查，最终通过备份并重置用户级状态恢复。</desc>
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#c5d2df"/></pattern>
+    <linearGradient id="route" x1="214" y1="188" x2="510" y2="188" gradientUnits="userSpaceOnUse"><stop stop-color="#5279a3"/><stop offset=".53" stop-color="#b47a47"/><stop offset="1" stop-color="#5279a3"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="170%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#52657a" flood-opacity=".13"/></filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="m2 1 6 4-6 4" stroke="#71849a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect width="720" height="480" fill="#edf2f8"/>
+  <rect x="22" y="22" width="676" height="436" rx="22" fill="#f4f7fb" stroke="#d4deea" stroke-width="2"/>
+  <rect x="23" y="23" width="674" height="434" rx="21" fill="url(#grid)"/>
+  <g font-family="Geist, PingFang SC, Microsoft YaHei, sans-serif">
+    <rect x="48" y="46" width="8" height="23" rx="4" fill="#426c9a"/>
+    <text x="70" y="65" fill="#28394c" font-size="21" font-weight="600">追踪一次窗口“回跳”</text>
+    <text x="670" y="63" text-anchor="end" fill="#75879a" font-size="13" letter-spacing="1.6">WINDOW FORENSICS / 01</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="48" y="94" width="624" height="182" rx="15" fill="#fbfdff" stroke="#cbd7e5" stroke-width="2"/>
+    <path d="M49 109a14 14 0 0 1 14-14h594a14 14 0 0 1 14 14v27H49v-27Z" fill="#e6edf5"/>
+    <circle cx="69" cy="115" r="4" fill="#a7b6c6"/><circle cx="84" cy="115" r="4" fill="#a7b6c6"/><circle cx="99" cy="115" r="4" fill="#a7b6c6"/>
+    <rect x="123" y="105" width="291" height="21" rx="10.5" fill="#f8fafc" stroke="#d3dde7"/>
+    <text x="139" y="120" fill="#64778c" font-family="Geist, PingFang SC, Microsoft YaHei, sans-serif" font-size="11">C:\Windows</text>
+    <rect x="559" y="104" width="89" height="22" rx="11" fill="#dce7f1"/>
+    <text x="603" y="119" text-anchor="middle" fill="#496681" font-family="Geist, PingFang SC, Microsoft YaHei, sans-serif" font-size="11" font-weight="600">同一窗口 · HWND</text>
+  </g>
+  <g font-family="Geist, PingFang SC, Microsoft YaHei, sans-serif">
+    <path d="M103 169h61l14 14v35h-75z" fill="#e5edf6" stroke="#5279a3" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M103 169h27l8 9h40" stroke="#5279a3" stroke-width="2" stroke-linejoin="round"/>
+    <text x="139" y="239" text-anchor="middle" fill="#344a61" font-size="15" font-weight="600">目标目录</text>
+    <text x="139" y="257" text-anchor="middle" fill="#75879a" font-size="12">先正确打开</text>
+    <path d="M215 195c48-42 84 40 133 0s88 40 132 0" stroke="url(#route)" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 1"/>
+    <circle cx="215" cy="195" r="6" fill="#5279a3" stroke="#fbfdff" stroke-width="3"/>
+    <circle cx="480" cy="195" r="6" fill="#b47a47" stroke="#fbfdff" stroke-width="3"/>
+    <rect x="302" y="164" width="107" height="25" rx="12.5" fill="#f4eadd" stroke="#e3c9aa"/>
+    <text x="355" y="181" text-anchor="middle" fill="#93663f" font-size="12" font-weight="600">0.4 — 3.6 秒</text>
+    <path d="m487 169 14 0 8 9h34v40h-56z" fill="#f3ebe1" stroke="#b47a47" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M487 169h14l8 9h34" stroke="#b47a47" stroke-width="2" stroke-linejoin="round"/>
+    <text x="516" y="239" text-anchor="middle" fill="#344a61" font-size="15" font-weight="600">桌面</text>
+    <text x="516" y="257" text-anchor="middle" fill="#9a704d" font-size="12">窗口被重定向</text>
+  </g>
+  <path d="M360 286v18" stroke="#71849a" stroke-width="2" marker-end="url(#arrow)"/>
+  <g font-family="Geist, PingFang SC, Microsoft YaHei, sans-serif">
+    <text x="48" y="333" fill="#344a61" font-size="13" font-weight="600" letter-spacing="1">排除外因</text>
+    <rect x="125" y="314" width="91" height="31" rx="15.5" fill="#f9fbfd" stroke="#d4deea"/><text x="170" y="334" text-anchor="middle" fill="#687b90" font-size="12">后台程序</text>
+    <rect x="225" y="314" width="91" height="31" rx="15.5" fill="#f9fbfd" stroke="#d4deea"/><text x="270" y="334" text-anchor="middle" fill="#687b90" font-size="12">外壳扩展</text>
+    <rect x="325" y="314" width="91" height="31" rx="15.5" fill="#f9fbfd" stroke="#d4deea"/><text x="370" y="334" text-anchor="middle" fill="#687b90" font-size="12">驱动 / 服务</text>
+    <rect x="425" y="314" width="91" height="31" rx="15.5" fill="#f9fbfd" stroke="#d4deea"/><text x="470" y="334" text-anchor="middle" fill="#687b90" font-size="12">路径解析</text>
+    <path d="m537 330 17 0" stroke="#71849a" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="565" y="310" width="107" height="40" rx="12" fill="#e3ecf5" stroke="#bacbde"/>
+    <text x="618" y="327" text-anchor="middle" fill="#496681" font-size="11" font-weight="600">用户级</text>
+    <text x="618" y="342" text-anchor="middle" fill="#496681" font-size="11" font-weight="600">Explorer 状态</text>
+    <path d="M48 372h624" stroke="#d7e0e9"/>
+    <circle cx="63" cy="409" r="14" fill="#e2ecf4"/><path d="M57 409h12M63 403v12" stroke="#5279a3" stroke-width="2" stroke-linecap="round"/>
+    <text x="88" y="405" fill="#344a61" font-size="15" font-weight="600">先备份，再重置状态</text>
+    <text x="88" y="427" fill="#71849a" font-size="12">保留文件夹映射 · 重启 Explorer · 自动验证</text>
+    <rect x="545" y="392" width="127" height="35" rx="17.5" fill="#293b50"/>
+    <text x="608" y="414" text-anchor="middle" fill="#f5f8fb" font-size="12" font-weight="600">定位并修复</text>
+  </g>
+</svg>
